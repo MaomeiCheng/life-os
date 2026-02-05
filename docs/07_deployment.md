@@ -15,3 +15,6 @@ This repo supports multiple deployment paths. Choose one to start.
 - `.env.example` includes all required keys
 - No secrets committed
 - SSOT validation integrated in build or CI (recommended)
+
+## Current implementation path
+- Next.js app root: `apps/web`

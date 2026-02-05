@@ -49,3 +49,6 @@ src/modules/notes/
 - `console.*` locally
 - Platform logs in production
 - Introduce structured logger later if needed
+
+## Actual App Location (current)
+- Web app: `apps/web`
