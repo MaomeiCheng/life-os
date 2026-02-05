@@ -335,6 +335,7 @@ export default async function MusicSSOTPage({
                 { key: "crown_date", label: "Crown date", width: "120px" },
                 { key: "title", label: "Title" },
                 { key: "card_received_date", label: "Card received", width: "130px" },
+                { key: "reason", label: "Reason" },
                 { key: "note", label: "Note" },
               ]}
               rows={itemsView}

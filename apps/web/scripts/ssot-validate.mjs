@@ -61,7 +61,7 @@ for (const [i, e] of events.entries()) {
   requireKeys(e, ["event_id", "event_date", "planned_count", "decided_count", "status", "note"], `events[${i}]`);
 }
 for (const [i, it] of items.entries()) {
-  requireKeys(it, ["timeline_index", "event_id", "crown_date", "title", "card_received_date", "note"], `items[${i}]`);
+  requireKeys(it, ["timeline_index", "event_id", "crown_date", "title", "card_received_date", "note","reason"], `items[${i}]`);
 }
 for (const [i, p] of pending.entries()) {
   requireKeys(p, ["temp_code", "title", "reason"], `pending[]`);
