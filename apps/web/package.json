@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "ssot:validate": "node scripts/ssot-validate.mjs"
+    "ssot:validate": "node scripts/ssot-validate.mjs",
+    "finance:validate": "node scripts/finance-validate.mjs"
   },
   "dependencies": {
     "next": "16.1.6",
