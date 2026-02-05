@@ -215,6 +215,15 @@ export default async function MusicSSOTPage({
             <span style={{ color: "#94A3B8" }}>/</span> Music
           </nav>
 
+          <div style={{ marginTop: 8, fontSize: 12, color: "#64748B", lineHeight: 1.6 }}>
+            <div>
+              Validate: <code style={{ color: "#0F172A" }}>cd apps/web && pnpm validate</code>
+            </div>
+            <div>
+              Data: <code style={{ color: "#0F172A" }}>ssot/data/music/music_events.json</code> · <code style={{ color: "#0F172A" }}>music_crown_items.json</code> · <code style={{ color: "#0F172A" }}>music_pending_list.json</code>
+            </div>
+          </div>
+
           <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div>
               <h1 style={{ fontSize: 18, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
