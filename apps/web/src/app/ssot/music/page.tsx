@@ -253,6 +253,20 @@ export default async function MusicSSOTPage({ searchParams }: { searchParams: Pr
             <div style={{ marginTop: 8, color: "#64748B", fontSize: 13 }}>
               SSOT_PATH: <code style={{ color: "#0F172A" }}>{ssotRel}</code>
             </div>
+
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <Link href="/" style={{
+              padding: "10px 12px",
+              borderRadius: 12,
+              border: "1px solid #E5E7EB",
+              background: "white",
+              color: "#0F172A",
+              fontSize: 13,
+              fontWeight: 800,
+              textDecoration: "none",
+              boxShadow: "0 6px 18px rgba(15, 23, 42, 0.06)",
+            }}>Back Home</Link>
+          </div>
           </div>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
