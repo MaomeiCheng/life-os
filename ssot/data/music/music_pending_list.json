@@ -2,61 +2,73 @@
   {
     "temp_code": "T01",
     "title": "致未來的你我",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_3d18b58cfd1b4f2d"
   },
   {
     "temp_code": "T02",
     "title": "樹的花語",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_0b6aa20a008848ac"
   },
   {
     "temp_code": "T03",
     "title": "阿楚姑娘",
-    "reason": "第3首：因為這是我第一首請這位歌手學著唱的歌。"
+    "reason": "第3首：因為這是我第一首請這位歌手學著唱的歌。",
+    "pending_id": "mp_ebc18d6ddfbd48ad"
   },
   {
     "temp_code": "T04",
     "title": "你的太陽",
-    "reason": "第4首：剛認識這位歌手時，他唱給我聽的歌，所以想記錄。"
+    "reason": "第4首：剛認識這位歌手時，他唱給我聽的歌，所以想記錄。",
+    "pending_id": "mp_5666032b71764e72"
   },
   {
     "temp_code": "T05",
     "title": "如果可以",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_aded8a81fcb74146"
   },
   {
     "temp_code": "T06",
     "title": "晴",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_ab745ef6d4f546d1"
   },
   {
     "temp_code": "T07",
     "title": "雨",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_e06a3ed6e278404f"
   },
   {
     "temp_code": "T08",
     "title": "你是我的風景",
-    "reason": "第8首：這是這位歌手最喜歡的歌。"
+    "reason": "第8首：這是這位歌手最喜歡的歌。",
+    "pending_id": "mp_c6ffed1e025d41df"
   },
   {
     "temp_code": "T09",
     "title": "找一個溫暖的人",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_65cb727a734b4009"
   },
   {
     "temp_code": "T10",
     "title": "借月",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_a6c1fc7d46564da6"
   },
   {
     "temp_code": "T11",
     "title": "萬物不如你",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_5ba805f544cd41c6"
   },
   {
     "temp_code": "T12",
     "title": "天氣未報",
-    "reason": ""
+    "reason": "",
+    "pending_id": "mp_bdde55e02e9c49d6"
   }
 ]

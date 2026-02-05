@@ -64,12 +64,13 @@ for (const [i, it] of items.entries()) {
   requireKeys(it, ["timeline_index", "event_id", "crown_date", "title", "card_received_date", "note","reason"], `items[${i}]`);
 }
 for (const [i, p] of pending.entries()) {
-  requireKeys(p, ["temp_code", "title", "reason"], `pending[]`);
+  requireKeys(p, ["pending_id","temp_code","title","reason"], `pending[${i}]`);
 }
 
 // Uniqueness checks
 uniqueBy(events, "event_id", "events");
 uniqueBy(items, "timeline_index", "items");
+uniqueBy(pending, "pending_id", "pending");
 uniqueBy(pending, "temp_code", "pending");
 
 // Cross reference: items.event_id must exist in events.event_id
