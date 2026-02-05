@@ -19,109 +19,6 @@ function normalize(s: unknown) {
   return String(s ?? "").trim().toLowerCase();
 }
 
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      style={{
-        fontSize: 12,
-        padding: "4px 10px",
-        borderRadius: 999,
-        background: "#EEF2FF",
-        border: "1px solid #E0E7FF",
-        color: "#3730A3",
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function PillLink({
-  href,
-  active,
-  children,
-  right,
-}: {
-  href: string;
-  active?: boolean;
-  children: React.ReactNode;
-  right?: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      style={{
-        padding: "8px 12px",
-        borderRadius: 999,
-        fontSize: 13,
-        fontWeight: 900,
-        textDecoration: "none",
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        cursor: "pointer",
-        background: active ? "#0F172A" : "white",
-        color: active ? "white" : "#0F172A",
-        border: `1px solid ${active ? "#0F172A" : "#E5E7EB"}`,
-      }}
-    >
-      {children}
-      {right}
-    </Link>
-  );
-}
-
-function Card(props: { title: string; right?: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <section
-      style={{
-        background: "white",
-        border: "1px solid #E5E7EB",
-        borderRadius: 16,
-        padding: 16,
-        marginTop: 14,
-        boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          gap: 12,
-          flexWrap: "wrap",
-          marginBottom: 12,
-        }}
-      >
-        <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: "#0F172A" }}>
-          {props.title}
-        </h2>
-        {props.right}
-      </div>
-      {props.children}
-    </section>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div
-      style={{
-        background: "white",
-        border: "1px solid #E5E7EB",
-        borderRadius: 14,
-        padding: 14,
-        boxShadow: "0 6px 18px rgba(15, 23, 42, 0.06)",
-      }}
-    >
-      <div style={{ fontSize: 12, color: "#6B7280" }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: 900, marginTop: 6, color: "#0F172A" }}>
-        {value}
-      </div>
-    </div>
-  );
-}
-
 function Table({
   columns,
   rows,
@@ -195,6 +92,51 @@ function buildHref(tab: string, q: string) {
   return `/ssot/music?${params.toString()}`;
 }
 
+function TabLink({
+  href,
+  active,
+  label,
+  count,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+  count: number;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        padding: "6px 10px",
+        borderRadius: 10,
+        fontSize: 13,
+        fontWeight: 900,
+        textDecoration: "none",
+        background: active ? "#0F172A" : "transparent",
+        color: active ? "white" : "#0F172A",
+        border: `1px solid ${active ? "#0F172A" : "#E5E7EB"}`,
+        display: "inline-flex",
+        gap: 8,
+        alignItems: "center",
+      }}
+    >
+      {label}
+      <span
+        style={{
+          fontSize: 12,
+          padding: "1px 8px",
+          borderRadius: 999,
+          background: active ? "rgba(255,255,255,0.18)" : "#F1F5F9",
+          color: active ? "white" : "#0F172A",
+          border: active ? "1px solid rgba(255,255,255,0.18)" : "1px solid #E5E7EB",
+        }}
+      >
+        {count}
+      </span>
+    </Link>
+  );
+}
+
 export default async function MusicSSOTPage({
   searchParams,
 }: {
@@ -244,11 +186,14 @@ export default async function MusicSSOTPage({
       )
     : pending;
 
-  const tabs: { key: string; label: string; count: number }[] = [
+  const tabs = [
     { key: "events", label: "Events", count: events.length },
     { key: "items", label: "Crown Items", count: items.length },
     { key: "pending", label: "Pending", count: pending.length },
-  ];
+  ] as const;
+
+  const rowsCount =
+    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : pendingView.length;
 
   return (
     <main
@@ -256,176 +201,106 @@ export default async function MusicSSOTPage({
         minHeight: "100vh",
         padding: 24,
         fontFamily: "ui-sans-serif, system-ui",
-        background: "linear-gradient(180deg, #F8FAFC, #FFFFFF)",
+        background: "linear-gradient(180deg, #FFFFFF, #F8FAFC)",
       }}
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        {/* Header bar */}
-        <header
-          style={{
-            background: "white",
-            border: "1px solid #E5E7EB",
-            borderRadius: 16,
-            padding: 14,
-            boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            flexWrap: "wrap",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <nav style={{ fontSize: 12, color: "#64748B" }}>
-                <Link href="/" style={{ color: "#0F172A", textDecoration: "none", fontWeight: 900 }}>
-                  Home
-                </Link>{" "}
-                <span style={{ color: "#94A3B8" }}>/</span> SSOT{" "}
-                <span style={{ color: "#94A3B8" }}>/</span> Music
-              </nav>
-              <Badge>read-only</Badge>
-            </div>
-            <div style={{ display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
+        {/* Minimal header */}
+        <header style={{ marginBottom: 14 }}>
+          <nav style={{ fontSize: 12, color: "#64748B" }}>
+            <Link href="/" style={{ color: "#0F172A", textDecoration: "none", fontWeight: 900 }}>
+              Home
+            </Link>{" "}
+            <span style={{ color: "#94A3B8" }}>/</span> SSOT{" "}
+            <span style={{ color: "#94A3B8" }}>/</span> Music
+          </nav>
+
+          <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div>
               <h1 style={{ fontSize: 18, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
-                Music SSOT Dashboard
+                Music
               </h1>
-              <div style={{ fontSize: 12, color: "#64748B" }}>
-                SSOT_PATH: <code style={{ color: "#0F172A" }}>{ssotRel}</code>
+              <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
+                SSOT_PATH: <code style={{ color: "#0F172A" }}>{ssotRel}</code> • Last event:{" "}
+                <code style={{ color: "#0F172A" }}>{String(lastEventDate || "-")}</code>
               </div>
             </div>
+
+            <form method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <input type="hidden" name="tab" value={tab} />
+              <input
+                name="q"
+                defaultValue={q}
+                placeholder="Search…"
+                style={{
+                  width: 300,
+                  maxWidth: "72vw",
+                  padding: "10px 12px",
+                  borderRadius: 12,
+                  border: "1px solid #E5E7EB",
+                  outline: "none",
+                  fontSize: 13,
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 12,
+                  border: "1px solid #0F172A",
+                  background: "#0F172A",
+                  color: "white",
+                  fontSize: 13,
+                  fontWeight: 900,
+                  cursor: "pointer",
+                }}
+              >
+                Go
+              </button>
+              <Link
+                href={buildHref(tab, "")}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 12,
+                  border: "1px solid #E5E7EB",
+                  background: "transparent",
+                  color: "#0F172A",
+                  fontSize: 13,
+                  fontWeight: 900,
+                  textDecoration: "none",
+                }}
+              >
+                Clear
+              </Link>
+            </form>
           </div>
 
-          <Link
-            href="/"
-            style={{
-              padding: "10px 12px",
-              borderRadius: 12,
-              border: "1px solid #E5E7EB",
-              background: "white",
-              color: "#0F172A",
-              fontSize: 13,
-              fontWeight: 900,
-              textDecoration: "none",
-            }}
-          >
-            Back Home
-          </Link>
+          <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            {tabs.map((t) => (
+              <TabLink
+                key={t.key}
+                href={buildHref(t.key, q)}
+                active={tab === t.key}
+                label={t.label}
+                count={t.count}
+              />
+            ))}
+            <span style={{ marginLeft: 6, fontSize: 12, color: "#64748B" }}>
+              Showing <b style={{ color: "#0F172A" }}>{rowsCount}</b> rows
+            </span>
+          </div>
         </header>
 
-        {/* Stats */}
-        <div
-          style={{
-            marginTop: 14,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 12,
-          }}
-        >
-          <Stat label="Events" value={String(events.length)} />
-          <Stat label="Crown items" value={String(items.length)} />
-          <Stat label="Pending" value={String(pending.length)} />
-          <Stat label="Last event date" value={String(lastEventDate || "-")} />
-        </div>
-
-        {/* Search */}
+        {/* Content */}
         <section
           style={{
-            marginTop: 14,
             background: "white",
             border: "1px solid #E5E7EB",
             borderRadius: 16,
-            padding: 14,
             boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 12,
-            flexWrap: "wrap",
-            alignItems: "center",
           }}
         >
-          <div style={{ fontWeight: 900, color: "#0F172A" }}>Filters</div>
-
-          <form method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <input type="hidden" name="tab" value={tab} />
-            <input
-              name="q"
-              defaultValue={q}
-              placeholder="Search: song / note / date / id..."
-              style={{
-                width: 360,
-                maxWidth: "72vw",
-                padding: "10px 12px",
-                borderRadius: 12,
-                border: "1px solid #E5E7EB",
-                outline: "none",
-                fontSize: 13,
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                padding: "10px 12px",
-                borderRadius: 12,
-                border: "1px solid #0F172A",
-                background: "#0F172A",
-                color: "white",
-                fontSize: 13,
-                fontWeight: 900,
-                cursor: "pointer",
-              }}
-            >
-              Apply
-            </button>
-
-            <Link
-              href={buildHref(tab, "")}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 12,
-                border: "1px solid #E5E7EB",
-                background: "white",
-                color: "#0F172A",
-                fontSize: 13,
-                fontWeight: 900,
-                textDecoration: "none",
-              }}
-            >
-              Clear
-            </Link>
-          </form>
-        </section>
-
-        {/* Tabs */}
-        <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {tabs.map((t) => (
-            <PillLink
-              key={t.key}
-              href={buildHref(t.key, q)}
-              active={tab === t.key}
-              right={
-                <span
-                  style={{
-                    fontSize: 12,
-                    padding: "2px 8px",
-                    borderRadius: 999,
-                    background: tab === t.key ? "rgba(255,255,255,0.18)" : "#F1F5F9",
-                    color: tab === t.key ? "white" : "#0F172A",
-                    border: tab === t.key ? "1px solid rgba(255,255,255,0.18)" : "1px solid #E5E7EB",
-                  }}
-                >
-                  {t.count}
-                </span>
-              }
-            >
-              {t.label}
-            </PillLink>
-          ))}
-        </div>
-
-        {/* Content */}
-        {tab === "events" ? (
-          <Card title={`Events${q ? " (filtered)" : ""}`} right={<Badge>{eventsView.length} rows</Badge>}>
+          {tab === "events" ? (
             <Table
               columns={[
                 { key: "event_id", label: "Event ID", width: "90px" },
@@ -437,11 +312,9 @@ export default async function MusicSSOTPage({
               ]}
               rows={eventsView}
             />
-          </Card>
-        ) : null}
+          ) : null}
 
-        {tab === "items" ? (
-          <Card title={`Crown Items${q ? " (filtered)" : ""}`} right={<Badge>{itemsView.length} rows</Badge>}>
+          {tab === "items" ? (
             <Table
               columns={[
                 { key: "timeline_index", label: "#", width: "70px" },
@@ -453,11 +326,9 @@ export default async function MusicSSOTPage({
               ]}
               rows={itemsView}
             />
-          </Card>
-        ) : null}
+          ) : null}
 
-        {tab === "pending" ? (
-          <Card title={`Pending List${q ? " (filtered)" : ""}`} right={<Badge>{pendingView.length} rows</Badge>}>
+          {tab === "pending" ? (
             <Table
               columns={[
                 { key: "temp_code", label: "Code", width: "90px" },
@@ -465,11 +336,11 @@ export default async function MusicSSOTPage({
               ]}
               rows={pendingView}
             />
-          </Card>
-        ) : null}
+          ) : null}
+        </section>
 
-        <footer style={{ marginTop: 18, color: "#94A3B8", fontSize: 12 }}>
-          Tabs switch views. Search filters current tab only.
+        <footer style={{ marginTop: 14, fontSize: 12, color: "#94A3B8" }}>
+          Read-only view from <code style={{ color: "#0F172A" }}>ssot/data/music</code>
         </footer>
       </div>
     </main>
