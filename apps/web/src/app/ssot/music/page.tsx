@@ -346,6 +346,7 @@ export default async function MusicSSOTPage({
               columns={[
                 { key: "temp_code", label: "Code", width: "90px" },
                 { key: "title", label: "Title" },
+                { key: "reason", label: "Reason" },
               ]}
               rows={pendingView}
             />

@@ -64,7 +64,7 @@ for (const [i, it] of items.entries()) {
   requireKeys(it, ["timeline_index", "event_id", "crown_date", "title", "card_received_date", "note"], `items[${i}]`);
 }
 for (const [i, p] of pending.entries()) {
-  requireKeys(p, ["temp_code", "title"], `pending[${i}]`);
+  requireKeys(p, ["temp_code", "title", "reason"], `pending[]`);
 }
 
 // Uniqueness checks

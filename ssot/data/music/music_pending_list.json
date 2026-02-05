@@ -1,50 +1,62 @@
 [
   {
     "temp_code": "T01",
-    "title": "致未來的你我"
+    "title": "致未來的你我",
+    "reason": ""
   },
   {
     "temp_code": "T02",
-    "title": "樹的花語"
+    "title": "樹的花語",
+    "reason": ""
   },
   {
     "temp_code": "T03",
-    "title": "阿楚姑娘"
+    "title": "阿楚姑娘",
+    "reason": ""
   },
   {
     "temp_code": "T04",
-    "title": "你的太陽"
+    "title": "你的太陽",
+    "reason": ""
   },
   {
     "temp_code": "T05",
-    "title": "如果可以"
+    "title": "如果可以",
+    "reason": ""
   },
   {
     "temp_code": "T06",
-    "title": "晴"
+    "title": "晴",
+    "reason": ""
   },
   {
     "temp_code": "T07",
-    "title": "雨"
+    "title": "雨",
+    "reason": ""
   },
   {
     "temp_code": "T08",
-    "title": "你是我的風景"
+    "title": "你是我的風景",
+    "reason": ""
   },
   {
     "temp_code": "T09",
-    "title": "找一個溫暖的人"
+    "title": "找一個溫暖的人",
+    "reason": ""
   },
   {
     "temp_code": "T10",
-    "title": "借月"
+    "title": "借月",
+    "reason": ""
   },
   {
     "temp_code": "T11",
-    "title": "萬物不如你"
+    "title": "萬物不如你",
+    "reason": ""
   },
   {
     "temp_code": "T12",
-    "title": "天氣未報"
+    "title": "天氣未報",
+    "reason": ""
   }
 ]
