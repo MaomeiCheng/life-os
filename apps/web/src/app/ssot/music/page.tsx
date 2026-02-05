@@ -215,6 +215,10 @@ export default async function MusicSSOTPage({
             <span style={{ color: "#94A3B8" }}>/</span> Music
           </nav>
 
+          <div style={{ marginTop: 8, fontSize: 12, color: "#64748B" }}>
+            Validate: <code style={{ color: "#0F172A" }}>pnpm validate</code>
+          </div>
+
           <div style={{ marginTop: 8, fontSize: 12, color: "#64748B", lineHeight: 1.6 }}>
             <div>
               Validate: <code style={{ color: "#0F172A" }}>cd apps/web && pnpm validate</code>
