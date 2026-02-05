@@ -7,26 +7,55 @@ export const revalidate = 0;
 export default function Home() {
   const s = ssotStatus();
 
-  const cardStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.10)",
-    borderRadius: 16,
-    padding: 16,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+  const wrap: React.CSSProperties = {
+    maxWidth: 980,
+    margin: "0 auto",
   };
 
-  const btnStyle: React.CSSProperties = {
+  const card: React.CSSProperties = {
+    background: "white",
+    border: "1px solid #E5E7EB",
+    borderRadius: 16,
+    padding: 16,
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
+  };
+
+  const btnPrimary: React.CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
     gap: 8,
     padding: "10px 12px",
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.08)",
-    color: "rgba(255,255,255,0.92)",
+    border: "1px solid #0F172A",
+    background: "#0F172A",
+    color: "white",
     textDecoration: "none",
-    fontWeight: 800,
+    fontWeight: 900,
     fontSize: 13,
+  };
+
+  const btn: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "10px 12px",
+    borderRadius: 12,
+    border: "1px solid #E5E7EB",
+    background: "white",
+    color: "#0F172A",
+    textDecoration: "none",
+    fontWeight: 900,
+    fontSize: 13,
+  };
+
+  const pill: React.CSSProperties = {
+    fontSize: 12,
+    padding: "4px 10px",
+    borderRadius: 999,
+    background: "#F1F5F9",
+    border: "1px solid #E5E7EB",
+    color: "#0F172A",
+    fontWeight: 800,
   };
 
   return (
@@ -35,69 +64,66 @@ export default function Home() {
         minHeight: "100vh",
         padding: 24,
         fontFamily: "ui-sans-serif, system-ui",
-        background:
-          "radial-gradient(1200px 600px at 10% 0%, rgba(99,102,241,0.25), transparent 60%), radial-gradient(900px 500px at 90% 10%, rgba(236,72,153,0.18), transparent 55%), linear-gradient(180deg, #0b1020, #070a12)",
-        color: "rgba(255,255,255,0.92)",
+        background: "linear-gradient(180deg, #FFFFFF, #F8FAFC)",
       }}
     >
-      <div style={{ maxWidth: 980, margin: "0 auto" }}>
+      <div style={wrap}>
         <header style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 900, margin: 0 }}>Life OS (Local)</h1>
-            <p style={{ marginTop: 8, marginBottom: 0, color: "rgba(255,255,255,0.72)", fontSize: 13 }}>
-              SSOT connected: <b>{String(s.isDir)}</b>
-            </p>
+            <h1 style={{ fontSize: 22, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
+              Life OS
+            </h1>
+            <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <span style={pill}>env: {process.env.NEXT_PUBLIC_APP_ENV}</span>
+              <span style={pill}>ssot: {s.isDir ? "connected" : "missing"}</span>
+            </div>
           </div>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <Link href="/ssot/music" style={btnStyle}>
+            <Link href="/ssot/music" style={btnPrimary}>
               Open SSOT / Music
             </Link>
-            <Link href="/ssot/music?tab=items" style={btnStyle}>
+            <Link href="/ssot/music?tab=items" style={btn}>
               Crown Items
             </Link>
-            <Link href="/ssot/music?tab=pending" style={btnStyle}>
+            <Link href="/ssot/music?tab=pending" style={btn}>
               Pending List
             </Link>
           </div>
         </header>
 
-        <section style={{ marginTop: 16, ...cardStyle }}>
-          <h2 style={{ fontSize: 16, fontWeight: 800, margin: 0, marginBottom: 10 }}>
-            Environment
-          </h2>
-          <ul style={{ lineHeight: 1.9, margin: 0, paddingLeft: 18 }}>
-            <li>NEXT_PUBLIC_APP_NAME: {process.env.NEXT_PUBLIC_APP_NAME}</li>
-            <li>NEXT_PUBLIC_APP_ENV: {process.env.NEXT_PUBLIC_APP_ENV}</li>
-            <li>SSOT_PATH: {process.env.SSOT_PATH}</li>
-          </ul>
+        <section style={{ marginTop: 14, ...card }}>
+          <h2 style={{ fontSize: 14, fontWeight: 900, margin: 0, color: "#0F172A" }}>Environment</h2>
+          <div style={{ marginTop: 10, fontSize: 13, color: "#334155", lineHeight: 1.8 }}>
+            <div>NEXT_PUBLIC_APP_NAME: {process.env.NEXT_PUBLIC_APP_NAME}</div>
+            <div>NEXT_PUBLIC_APP_ENV: {process.env.NEXT_PUBLIC_APP_ENV}</div>
+            <div>SSOT_PATH: {process.env.SSOT_PATH}</div>
+          </div>
         </section>
 
-        <section style={{ marginTop: 14, ...cardStyle }}>
-          <h2 style={{ fontSize: 16, fontWeight: 800, margin: 0, marginBottom: 10 }}>
-            SSOT Status
-          </h2>
-          <ul style={{ lineHeight: 1.9, margin: 0, paddingLeft: 18 }}>
-            <li>Resolved path: {s.root}</li>
-            <li>Exists: {String(s.exists)}</li>
-            <li>Is directory: {String(s.isDir)}</li>
-          </ul>
+        <section style={{ marginTop: 14, ...card }}>
+          <h2 style={{ fontSize: 14, fontWeight: 900, margin: 0, color: "#0F172A" }}>SSOT Status</h2>
+          <div style={{ marginTop: 10, fontSize: 13, color: "#334155", lineHeight: 1.8 }}>
+            <div>Resolved path: {s.root}</div>
+            <div>Exists: {String(s.exists)}</div>
+            <div>Is directory: {String(s.isDir)}</div>
+          </div>
 
           {s.isDir ? (
             <>
-              <h3 style={{ marginTop: 12, fontSize: 14, fontWeight: 800 }}>
+              <div style={{ marginTop: 12, fontSize: 12, color: "#64748B" }}>
                 Top entries (first 20)
-              </h3>
+              </div>
               <pre
                 style={{
-                  background: "rgba(0,0,0,0.45)",
-                  border: "1px solid rgba(255,255,255,0.10)",
+                  marginTop: 8,
+                  background: "#0B1020",
+                  color: "rgba(255,255,255,0.92)",
                   borderRadius: 12,
                   padding: 12,
                   overflowX: "auto",
-                  color: "rgba(255,255,255,0.88)",
+                  fontSize: 12,
                   lineHeight: 1.6,
-                  fontSize: 13,
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word",
                 }}
@@ -106,10 +132,9 @@ export default function Home() {
               </pre>
             </>
           ) : (
-            <p style={{ marginTop: 12, color: "rgba(255,255,255,0.75)" }}>
-              SSOT folder not found. Create it at the resolved path or update SSOT_PATH in{" "}
-              <code>.env.local</code>.
-            </p>
+            <div style={{ marginTop: 12, color: "#B91C1C", fontSize: 13 }}>
+              SSOT folder not found. Create it at the resolved path or update SSOT_PATH in .env.local
+            </div>
           )}
         </section>
       </div>
