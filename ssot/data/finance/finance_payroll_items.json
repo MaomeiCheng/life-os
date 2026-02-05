@@ -1,0 +1,34 @@
+[
+  {
+    "slip_id": "PS001",
+    "line_no": 1,
+    "item_name": "5U(企業獎金先發數)",
+    "amount": 33470.0,
+    "note": "非固定薪資所得",
+    "kind": "earning"
+  },
+  {
+    "slip_id": "PS002",
+    "line_no": 1,
+    "item_name": "3P(春節獎金)",
+    "amount": 69340.0,
+    "note": "非固定薪資所得",
+    "kind": "earning"
+  },
+  {
+    "slip_id": "PS003",
+    "line_no": 1,
+    "item_name": "56(績效獎金先發數)",
+    "amount": 133880.0,
+    "note": "非固定薪資所得",
+    "kind": "earning"
+  },
+  {
+    "slip_id": "PS004",
+    "line_no": 1,
+    "item_name": "3G(特別獎勵金)",
+    "amount": 20000.0,
+    "note": "非固定薪資所得",
+    "kind": "earning"
+  }
+]

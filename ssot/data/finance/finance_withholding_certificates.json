@@ -1,0 +1,47 @@
+[
+  {
+    "year": 2025,
+    "sequence": 1,
+    "issuer": "職工福利會",
+    "income_type": "其他所得",
+    "taxable_income": 8458.0,
+    "tax_withheld": 0.0,
+    "source_sheet": "114年扣繳憑單"
+  },
+  {
+    "year": 2025,
+    "sequence": 2,
+    "issuer": "個家公司",
+    "income_type": "薪資所得",
+    "taxable_income": 800.0,
+    "tax_withheld": 0.0,
+    "source_sheet": "114年扣繳憑單"
+  },
+  {
+    "year": 2025,
+    "sequence": 3,
+    "issuer": "網分公司",
+    "income_type": "薪資所得",
+    "taxable_income": 1378820.0,
+    "tax_withheld": 22981.0,
+    "source_sheet": "114年扣繳憑單"
+  },
+  {
+    "year": 2025,
+    "sequence": 4,
+    "issuer": "網分公司",
+    "income_type": "競技競賽獎金及非政府舉辦機會中獎獎金所得",
+    "taxable_income": 700.0,
+    "tax_withheld": 0.0,
+    "source_sheet": "114年扣繳憑單"
+  },
+  {
+    "year": 2025,
+    "sequence": 5,
+    "issuer": "職工福利會",
+    "income_type": "其他所得",
+    "taxable_income": 1151.0,
+    "tax_withheld": 0.0,
+    "source_sheet": "114年扣繳憑單"
+  }
+]
