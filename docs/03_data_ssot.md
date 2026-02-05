@@ -29,3 +29,14 @@ Add scripts in `package.json` (examples):
 ## Seed Strategy (default)
 - For early stage: seed minimal reference tables.
 - Keep user data out of seed; user data is created at runtime.
+
+## Archived Import Artifacts (current)
+Raw SSOT import files are stored here:
+- `ssot/imports/xlsx/Personal_SSOT_Import.xlsx`
+- `ssot/imports/xlsx/Music_SSOT_Import.xlsx`
+- `ssot/imports/xlsx/Career_SSOT_Import.xlsx`
+
+These are not the canonical SSOT yet. Next step is to convert them into:
+- `ssot/schema/`
+- `ssot/data/`
+and add a validation command.
