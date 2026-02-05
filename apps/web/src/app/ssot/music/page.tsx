@@ -1,5 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 
 type AnyObj = Record<string, any>;
 
@@ -149,10 +154,20 @@ function normalize(s: unknown) {
   return String(s ?? "").trim().toLowerCase();
 }
 
-export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: string; tab?: string } }) {
+function buildHref(tab: string, q: string) {
+  const params = new URLSearchParams();
+  params.set("tab", tab);
+  if (q.trim()) params.set("q", q.trim());
+  return `/ssot/music?${params.toString()}`;
+}
+
+export default async function MusicSSOTPage({ searchParams }: { searchParams: Promise<{ q?: string; tab?: string }> }) {
+  const sp = await searchParams;
+
   const ssotRel = process.env.SSOT_PATH || "../../ssot";
-  const q = (searchParams.q || "").trim();
-  const tab = (searchParams.tab || "events").trim(); // events | items | pending
+  const q = (sp.q || "").trim();
+  const tab = (sp.tab || "events").trim(); // events | items | pending
+  const qn = q.toLowerCase();
 
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
   const items = readJson(path.join(ssotRel, "data/music/music_crown_items.json"));
@@ -164,30 +179,30 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
     .sort()
     .slice(-1)[0];
 
-  const qn = q.toLowerCase();
-
   const eventsView = q
-    ? events.filter((e) =>
-        normalize(e.event_id).includes(qn) ||
-        normalize(e.event_date).includes(qn) ||
-        normalize(e.note).includes(qn) ||
-        normalize(e.status).includes(qn)
+    ? events.filter(
+        (e) =>
+          normalize(e.event_id).includes(qn) ||
+          normalize(e.event_date).includes(qn) ||
+          normalize(e.note).includes(qn) ||
+          normalize(e.status).includes(qn)
       )
     : events;
 
   const itemsView = q
-    ? items.filter((i) =>
-        normalize(i.title).includes(qn) ||
-        normalize(i.event_id).includes(qn) ||
-        normalize(i.crown_date).includes(qn) ||
-        normalize(i.card_received_date).includes(qn) ||
-        normalize(i.note).includes(qn)
+    ? items.filter(
+        (i) =>
+          normalize(i.title).includes(qn) ||
+          normalize(i.event_id).includes(qn) ||
+          normalize(i.crown_date).includes(qn) ||
+          normalize(i.card_received_date).includes(qn) ||
+          normalize(i.note).includes(qn)
       )
     : items;
 
   const pendingView = q
-    ? pending.filter((p) =>
-        normalize(p.temp_code).includes(qn) || normalize(p.title).includes(qn)
+    ? pending.filter(
+        (p) => normalize(p.temp_code).includes(qn) || normalize(p.title).includes(qn)
       )
     : pending;
 
@@ -196,20 +211,6 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
     { key: "items", label: "Crown Items", count: items.length },
     { key: "pending", label: "Pending", count: pending.length },
   ];
-
-  function tabHref(nextTab: string) {
-    const params = new URLSearchParams();
-    params.set("tab", nextTab);
-    if (q) params.set("q", q);
-    return `/ssot/music?${params.toString()}`;
-  }
-
-  function submitHref(nextQ: string) {
-    const params = new URLSearchParams();
-    params.set("tab", tab);
-    if (nextQ.trim()) params.set("q", nextQ.trim());
-    return `/ssot/music?${params.toString()}`;
-  }
 
   const activeTabStyle: React.CSSProperties = {
     background: "#0F172A",
@@ -233,7 +234,15 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
       }}
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <header style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+            alignItems: "flex-start",
+          }}
+        >
           <div>
             <div style={{ display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
               <h1 style={{ fontSize: 22, fontWeight: 900, margin: 0, color: "#0F172A" }}>
@@ -247,11 +256,7 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
           </div>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <form
-              action={submitHref(q)}
-              method="get"
-              style={{ display: "flex", gap: 8, alignItems: "center" }}
-            >
+            <form method="get" style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input type="hidden" name="tab" value={tab} />
               <input
                 name="q"
@@ -282,8 +287,9 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
               >
                 Search
               </button>
-              <a
-                href={submitHref("")}
+
+              <Link
+                href={buildHref(tab, "")}
                 style={{
                   padding: "10px 12px",
                   borderRadius: 12,
@@ -296,12 +302,19 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
                 }}
               >
                 Clear
-              </a>
+              </Link>
             </form>
           </div>
         </header>
 
-        <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
+        <div
+          style={{
+            marginTop: 14,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 12,
+          }}
+        >
           <Stat label="Events" value={String(events.length)} />
           <Stat label="Crown items" value={String(items.length)} />
           <Stat label="Pending" value={String(pending.length)} />
@@ -310,9 +323,9 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
 
         <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
           {tabs.map((t) => (
-            <a
+            <Link
               key={t.key}
-              href={tabHref(t.key)}
+              href={buildHref(t.key, q)}
               style={{
                 padding: "8px 12px",
                 borderRadius: 999,
@@ -322,6 +335,7 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
+                cursor: "pointer",
                 ...(tab === t.key ? activeTabStyle : inactiveTabStyle),
               }}
             >
@@ -333,17 +347,18 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
                   borderRadius: 999,
                   background: tab === t.key ? "rgba(255,255,255,0.18)" : "#F1F5F9",
                   color: tab === t.key ? "white" : "#0F172A",
-                  border: tab === t.key ? "1px solid rgba(255,255,255,0.18)" : "1px solid #E5E7EB",
+                  border:
+                    tab === t.key ? "1px solid rgba(255,255,255,0.18)" : "1px solid #E5E7EB",
                 }}
               >
                 {t.count}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
 
         {tab === "events" ? (
-          <Card title="Events">
+          <Card title={`Events${q ? ` (filtered)` : ""}`} right={<Badge>{eventsView.length} rows</Badge>}>
             <Table
               columns={[
                 { key: "event_id", label: "Event ID", width: "90px" },
@@ -359,7 +374,7 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
         ) : null}
 
         {tab === "items" ? (
-          <Card title="Crown Items">
+          <Card title={`Crown Items${q ? ` (filtered)` : ""}`} right={<Badge>{itemsView.length} rows</Badge>}>
             <Table
               columns={[
                 { key: "timeline_index", label: "#", width: "70px" },
@@ -375,7 +390,7 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
         ) : null}
 
         {tab === "pending" ? (
-          <Card title="Pending List">
+          <Card title={`Pending List${q ? ` (filtered)` : ""}`} right={<Badge>{pendingView.length} rows</Badge>}>
             <Table
               columns={[
                 { key: "temp_code", label: "Code", width: "90px" },
@@ -387,7 +402,7 @@ export default function MusicSSOTPage({ searchParams }: { searchParams: { q?: st
         ) : null}
 
         <footer style={{ marginTop: 18, color: "#94A3B8", fontSize: 12 }}>
-          Tip: use Search to find by song name, event id, dates, or notes.
+          Tip: click tabs to switch views. Search supports song name, dates, ids, notes.
         </footer>
       </div>
     </main>
