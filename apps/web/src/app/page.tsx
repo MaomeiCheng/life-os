@@ -1,66 +1,54 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { ssotStatus } from "@/server/ssot";
 
 export default function Home() {
+  const s = ssotStatus();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+    <main style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>
+        Life OS (Local)
+      </h1>
+
+      <section style={{ marginTop: 16 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Environment</h2>
+        <ul style={{ lineHeight: 1.8 }}>
+          <li>NEXT_PUBLIC_APP_NAME: {process.env.NEXT_PUBLIC_APP_NAME}</li>
+          <li>NEXT_PUBLIC_APP_ENV: {process.env.NEXT_PUBLIC_APP_ENV}</li>
+          <li>SSOT_PATH: {process.env.SSOT_PATH}</li>
+        </ul>
+      </section>
+
+      <section style={{ marginTop: 16 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>SSOT Status</h2>
+        <ul style={{ lineHeight: 1.8 }}>
+          <li>Resolved path: {s.root}</li>
+          <li>Exists: {String(s.exists)}</li>
+          <li>Is directory: {String(s.isDir)}</li>
+        </ul>
+
+        {s.isDir ? (
+          <>
+            <h3 style={{ marginTop: 12, fontSize: 16, fontWeight: 600 }}>
+              Top entries (first 20)
+            </h3>
+            <pre
+              style={{
+                background: "#f6f8fa",
+                padding: 12,
+                borderRadius: 8,
+                overflowX: "auto",
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+              {JSON.stringify(s.entries, null, 2)}
+            </pre>
+          </>
+        ) : (
+          <p style={{ marginTop: 12 }}>
+            SSOT folder not found. Create it at the resolved path or update
+            SSOT_PATH in <code>.env.local</code>.
           </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        )}
+      </section>
+    </main>
   );
 }
