@@ -241,7 +241,10 @@ export default async function MusicSSOTPage({
       updatedAt: true,
     },
 
-    orderBy: [{ createdAt: "desc" }],
+    orderBy: [
+      { timelineIndex: "asc" },
+      { createdAt: "asc" },
+    ],
   });
 
   const cardsView = q
