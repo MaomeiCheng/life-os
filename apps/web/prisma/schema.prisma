@@ -68,4 +68,6 @@ model MusicCard {
 
   @@index([timelineIndex])
   @@index([pendingId])
+  @@index([timelineIndex, createdAt])
+  @@index([pendingId, createdAt])
 }
