@@ -9,7 +9,7 @@ import { ItemsTableClient } from "./ItemsTableClient";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type AnyObj = Record<string, unknown>;
+type AnyObj = Record<string, any>;
 
 function readJson(relPathFromWebRoot: string): AnyObj[] {
   const abs = path.resolve(process.cwd(), relPathFromWebRoot);
@@ -150,7 +150,7 @@ export default async function MusicSSOTPage({
 
   const ssotRel = process.env.SSOT_PATH || "../../ssot";
   const q = (sp.q || "").trim();
-  const tab = (sp.tab || "events").trim(); // events | items | pending | audit
+  const tab = (sp.tab || "events").trim(); // events | items | pending
   const qn = q.toLowerCase();
 
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
@@ -168,11 +168,6 @@ export default async function MusicSSOTPage({
   });
 
   const pendingFiltered = pending;
-
-  const audit = await db2.auditLog.findMany({
-    orderBy: [{ createdAt: "desc" }],
-    take: 200,
-  });
 
 
   const lastEventDate = events
@@ -212,11 +207,10 @@ export default async function MusicSSOTPage({
     { key: "events", label: "Events", count: events.length },
     { key: "items", label: "Crown Items", count: items.length },
     { key: "pending", label: "Pending", count: pending.length },
-    { key: "audit", label: "Audit", count: audit.length },
   ] as const;
 
   const rowsCount =
-    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : audit.length;
+    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : pendingView.length;
 
   return (
     <main
@@ -253,7 +247,7 @@ export default async function MusicSSOTPage({
 
           <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div>
-              <h1 style={{ fontSize: 18, fontWeight: 1000, margin: 0, color: "#0F172A" }}>
+              <h1 style={{ fontSize: 18, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
                 Music
               </h1>
               <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
@@ -353,23 +347,6 @@ export default async function MusicSSOTPage({
           {tab === "items" ? (<ItemsTableClient rows={itemsFiltered} />) : null}
 
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
-
-          {tab === "audit" ? (
-            <Table
-              columns={[
-                { key: "createdAt", label: "Time", width: "180px" },
-                { key: "entityType", label: "Entity", width: "140px" },
-                { key: "entityId", label: "Entity ID", width: "220px" },
-                { key: "action", label: "Action", width: "140px" },
-              ]}
-              rows={audit.map((a) => ({
-                createdAt: new Date(a.createdAt).toISOString(),
-                entityType: a.entityType,
-                entityId: a.entityId,
-                action: a.action,
-              }))}
-            />
-          ) : null}
         </section>
 
         <footer style={{ marginTop: 14, fontSize: 12, color: "#94A3B8" }}>

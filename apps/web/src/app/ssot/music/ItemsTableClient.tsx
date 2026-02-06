@@ -54,8 +54,8 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
 
       setEditingIndex(null);
       setDraftReason("");
-    } catch (e: any) {
-      setErrorById((m) => ({ ...m, [timelineIndex]: e?.message ?? "Save failed" }));
+    } catch (e: unknown) {
+      setErrorById((m) => ({ ...m, [timelineIndex]: (e instanceof Error ? e.message : "Save failed") }));
     } finally {
       setSaving((m) => ({ ...m, [timelineIndex]: false }));
     }

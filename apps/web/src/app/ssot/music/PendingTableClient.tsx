@@ -49,8 +49,8 @@ export function PendingTableClient({ rows }: { rows: PendingRow[] }) {
 
       setEditingId(null);
       setDraftReason("");
-    } catch (e: any) {
-      setErrorById((m) => ({ ...m, [pendingId]: e?.message ?? "Save failed" }));
+    } catch (e: unknown) {
+      setErrorById((m) => ({ ...m, [pendingId]: (e instanceof Error ? e.message : "Save failed") }));
     } finally {
       setSaving((m) => ({ ...m, [pendingId]: false }));
     }

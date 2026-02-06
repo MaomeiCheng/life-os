@@ -70,7 +70,7 @@ export default function Home() {
       <div style={wrap}>
         <header style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
+            <h1 style={{ fontSize: 22, fontWeight: 1000, margin: 0, color: "#0F172A" }}>
               Life OS
             </h1>
             <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
