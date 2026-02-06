@@ -117,6 +117,7 @@ export function PendingTableClient({ rows }: { rows: PendingRow[] }) {
                         onClick={() => startEdit(r)}
                         disabled={editingId !== null && editingId !== r.pendingId}
                         style={{
+                          color: "#0F172A",
                           padding: "8px 12px",
                           borderRadius: 10,
                           border: "1px solid #CBD5E1",
