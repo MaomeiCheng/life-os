@@ -51,10 +51,8 @@ block = """$BLOCK""".rstrip() + "\n"
 if pattern.search(s):
     s2 = pattern.sub(block.rstrip("\n"), s)
 else:
-    if s and not s.endswith("\n"):
-        s += "\n"
-    s2 = s + "\n" + block
+    s2 = s.rstrip() + "\n\n" + block
 
-readme.write_text(s2, encoding="utf-8")
-print("UPDATED_README_R2_BLOCK")
+readme.write_text(s2.rstrip() + "\n", encoding="utf-8")
+print("UPDATED_R2_BLOCK")
 PY
