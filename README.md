@@ -3,31 +3,6 @@
 ## Dev (Codespaces)
 
 
-### R2 (upload large mp4 + generate thumbnail)
-
-> Dashboard upload has a 300MB limit. Use S3 compatibility API instead.
-
-Public dev base URL:
-- https://pub-4ff6e284500a472e9913cb662e4384ca.r2.dev
-
-Upload (Mac):
-```bash
-aws --profile lifeos-r2 --endpoint-url https://95766963cde8c3ebf0481bfac54e1c3b.r2.cloudflarestorage.com \
-  s3 cp "$HOME/Downloads/93750_raw.mp4" "s3://lifeos-cards/cards/93750_raw.mp4"
-
-##Generate thumbnail in Codespaces (needs ffmpeg + awscli + DB running):
-
-docker start lifeos-postgres || true
-
-VIDEO_URL="https://pub-4ff6e284500a472e9913cb662e4384ca.r2.dev/cards/93750_raw.mp4"
-THUMB_KEY="cards/93750_raw.jpg"
-
-ffmpeg -y -ss 00:00:05 -i "$VIDEO_URL" -frames:v 1 -q:v 2 /tmp/thumb.jpg
-
-aws --profile lifeos-r2 --endpoint-url https://95766963cde8c3ebf0481bfac54e1c3b.r2.cloudflarestorage.com \
-  s3 cp /tmp/thumb.jpg "s3://lifeos-cards/$THUMB_KEY"
-
-
 ### Start DB (Postgres)
 If you reconnect to Codespaces and DB is not reachable, start the postgres container:
 
@@ -89,5 +64,5 @@ tmpdir="$(mktemp -d)"
 thumb="$tmpdir/thumb.jpg"
 ffmpeg -y -ss 00:00:05 -i "${CF_R2_PUBLIC_BASE}/${MP4_KEY}" -frames:v 1 -q:v 2 "$thumb"
 aws --profile "$AWS_PROFILE" --endpoint-url "$CF_R2_ENDPOINT" s3 cp "$thumb" "s3://${R2_BUCKET}/${JPG_KEY}"
-docker exec -i lifeos-postgres psql -U postgres -d lifeos -c "update "MusicCard" set "thumbUrl"='${CF_R2_PUBLIC_BASE}/${JPG_KEY}', "updatedAt"=now() where id='${CARD_ID}';"
+docker exec -i lifeos-postgres psql -U postgres -d lifeos -c "update \"MusicCard\" set \"thumbUrl\"='${CF_R2_PUBLIC_BASE}/${JPG_KEY}', \"updatedAt\"=now() where id='${CARD_ID}';"
 <!-- R2_WORKFLOW_END -->
