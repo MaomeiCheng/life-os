@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Link from "next/link";
 import { PendingTableClient } from "./PendingTableClient";
+import { ItemsTableClient } from "./ItemsTableClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -153,7 +154,13 @@ export default async function MusicSSOTPage({
   const qn = q.toLowerCase();
 
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
-  const items = readJson(path.join(ssotRel, "data/music/music_crown_items.json"));
+  const db2 = getDb();
+  const items = await db2.musicCrownItem.findMany({
+    where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { note: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
+    orderBy: [{ timelineIndex: "asc" }],
+  });
+
+  const itemsFiltered = items;
   const db = getDb();
   const pending = await db.musicPending.findMany({
     where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { tempCode: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
@@ -183,9 +190,9 @@ export default async function MusicSSOTPage({
     ? items.filter(
         (i) =>
           normalize(i.title).includes(qn) ||
-          normalize(i.event_id).includes(qn) ||
-          normalize(i.crown_date).includes(qn) ||
-          normalize(i.card_received_date).includes(qn) ||
+          normalize(i.eventId).includes(qn) ||
+          normalize(i.crownDate).includes(qn) ||
+          normalize(i.cardReceivedDate).includes(qn) ||
           normalize(i.note).includes(qn)
       )
     : items;
@@ -337,20 +344,7 @@ export default async function MusicSSOTPage({
             />
           ) : null}
 
-          {tab === "items" ? (
-            <Table
-              columns={[
-                { key: "timeline_index", label: "#", width: "70px" },
-                { key: "event_id", label: "Event ID", width: "90px" },
-                { key: "crown_date", label: "Crown date", width: "120px" },
-                { key: "title", label: "Title" },
-                { key: "card_received_date", label: "Card received", width: "130px" },
-                { key: "reason", label: "Reason" },
-                { key: "note", label: "Note" },
-              ]}
-              rows={itemsView}
-            />
-          ) : null}
+          {tab === "items" ? (<ItemsTableClient rows={itemsFiltered} />) : null}
 
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
         </section>
