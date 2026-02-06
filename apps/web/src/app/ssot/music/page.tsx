@@ -150,7 +150,7 @@ export default async function MusicSSOTPage({
 
   const ssotRel = process.env.SSOT_PATH || "../../ssot";
   const q = (sp.q || "").trim();
-  const tab = (sp.tab || "events").trim(); // events | items | pending | audit
+  const tab = (sp.tab || "events").trim(); // events | items | pending | cards | audit
   const qn = q.toLowerCase();
 
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
@@ -173,6 +173,19 @@ export default async function MusicSSOTPage({
     orderBy: [{ createdAt: "desc" }],
     take: 200,
   });
+
+  const cards = await db2.musicCard.findMany({
+    orderBy: [{ createdAt: "desc" }],
+  });
+
+  const cardsView = q
+    ? cards.filter(
+        (c) =>
+          normalize(c.title).includes(qn) ||
+          normalize(c.videoUrl).includes(qn) ||
+          normalize(c.thumbUrl).includes(qn)
+      )
+    : cards;
 
 
   const lastEventDate = events
@@ -212,11 +225,12 @@ export default async function MusicSSOTPage({
     { key: "events", label: "Events", count: events.length },
     { key: "items", label: "Crown Items", count: items.length },
     { key: "pending", label: "Pending", count: pending.length },
+    { key: "cards", label: "Cards", count: cards.length },
     { key: "audit", label: "Audit", count: audit.length },
   ] as const;
 
   const rowsCount =
-    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : audit.length;
+    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : tab === "cards" ? cardsView.length : audit.length;
 
   return (
     <main
@@ -353,6 +367,63 @@ export default async function MusicSSOTPage({
           {tab === "items" ? (<ItemsTableClient rows={itemsFiltered} />) : null}
 
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
+
+          {tab === "cards" ? (
+            <div style={{ padding: 14 }}>
+              <div style={{ fontSize: 12, color: "#64748B", marginBottom: 10 }}>
+                Video cards. Click a thumbnail to open and play.
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                  gap: 12,
+                }}
+              >
+                {cardsView.map((c) => (
+                  <a
+                    key={c.id}
+                    href={c.videoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: "block",
+                      textDecoration: "none",
+                      border: "1px solid #E5E7EB",
+                      borderRadius: 16,
+                      overflow: "hidden",
+                      background: "#fff",
+                      boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
+                    }}
+                  >
+                    <div style={{ aspectRatio: "16 / 9", background: "#0F172A" }}>
+                      {c.thumbUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={c.thumbUrl}
+                          alt={c.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        />
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "#94A3B8", fontSize: 12 }}>
+                          No thumbnail
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ padding: 10 }}>
+                      <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
+                      <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
+                        {c.timelineIndex != null ? `#${c.timelineIndex}` : c.pendingId ? c.pendingId : ""}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+                {cardsView.length === 0 ? (
+                  <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
 
           {tab === "audit" ? (
             <Table

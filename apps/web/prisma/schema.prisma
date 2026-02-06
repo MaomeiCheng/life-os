@@ -53,3 +53,17 @@ model AuditLog {
 
   @@index([entityType, entityId, createdAt])
 }
+
+model MusicCard {
+  id          String   @id @default(cuid())
+  title       String
+  timelineIndex Int?
+  pendingId   String?
+  videoUrl    String
+  thumbUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([timelineIndex])
+  @@index([pendingId])
+}
