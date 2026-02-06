@@ -5,6 +5,7 @@ import path from "node:path";
 import Link from "next/link";
 import { PendingTableClient } from "./PendingTableClient";
 import { ItemsTableClient } from "./ItemsTableClient";
+import { CardsGridClient } from "./CardsGridClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -434,60 +435,16 @@ export default async function MusicSSOTPage({
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
 
           {tab === "cards" ? (
-            <div style={{ padding: 14 }}>
-              <div style={{ fontSize: 12, color: "#64748B", marginBottom: 10 }}>
-                Video cards. Click a thumbnail to open and play.
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                  gap: 12,
-                }}
-              >
-                {cardsView.map((c) => (
-                  <a
-                    key={c.id}
-                    href={r2Url(c.videoKey, c.videoUrl)}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: "block",
-                      textDecoration: "none",
-                      border: "1px solid #E5E7EB",
-                      borderRadius: 16,
-                      overflow: "hidden",
-                      background: "#fff",
-                      boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
-                    }}
-                  >
-                    <div style={{ aspectRatio: "16 / 9", background: "#0F172A" }}>
-                      {r2Url(c.thumbKey, c.thumbUrl) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={r2Url(c.thumbKey, c.thumbUrl)}
-                          alt={c.title}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        />
-                      ) : (
-                        <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "#94A3B8", fontSize: 12 }}>
-                          No thumbnail
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ padding: 10 }}>
-                      <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
-                      <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
-                        {c.timelineIndex != null ? `#${c.timelineIndex}` : c.pendingId ? c.pendingId : ""}
-                      </div>
-                    </div>
-                  </a>
-                ))}
-                {cardsView.length === 0 ? (
-                  <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div>
-                ) : null}
-              </div>
-            </div>
+            <CardsGridClient
+              rows={cardsView.map((c) => ({
+                id: c.id,
+                title: c.title,
+                timelineIndex: c.timelineIndex ?? null,
+                pendingId: c.pendingId ?? null,
+                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+              }))}
+            />
           ) : null}
 
           {tab === "audit" ? (
