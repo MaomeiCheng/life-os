@@ -13,6 +13,7 @@ export type CardRowClient = {
 
 export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
   const [hoverId, setHoverId] = React.useState<string | null>(null);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
   const videoRefs = React.useRef<Record<string, HTMLVideoElement | null>>({});
 
   function stop(id: string) {
@@ -22,6 +23,16 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
       v.pause();
       v.currentTime = 0;
     } catch {}
+  }
+
+  function toggle(id: string) {
+    if (activeId === id) {
+      setActiveId(null);
+      stop(id);
+      return;
+    }
+    setActiveId(id);
+    play(id);
   }
 
   function play(id: string) {
@@ -48,11 +59,8 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
         }}
       >
         {rows.map((c) => (
-          <a
+          <div
             key={c.id}
-            href={c.videoSrc}
-            target="_blank"
-            rel="noreferrer"
             style={{
               display: "block",
               textDecoration: "none",
@@ -65,6 +73,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
           >
             <div
               style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}
+              onClick={() => toggle(c.id)}
               onMouseEnter={() => play(c.id)}
               onMouseLeave={() => {
                 setHoverId((prev) => (prev === c.id ? null : prev));
@@ -107,7 +116,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  display: hoverId === c.id ? "block" : "none",
+                  display: hoverId === c.id || activeId === c.id ? "block" : "none",
                 }}
               />
             </div>
@@ -115,10 +124,15 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
             <div style={{ padding: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
               <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
+                <div style={{ marginTop: 8 }}>
+                  <a href={c.videoSrc} target="_blank" rel="noreferrer" style={{ fontSize: 12, fontWeight: 900, color: "#0F172A", textDecoration: "underline" }}>
+                    Open
+                  </a>
+                </div>
                 {c.timelineIndex != null ? `#${c.timelineIndex}` : c.pendingId ? c.pendingId : ""}
               </div>
             </div>
-          </a>
+          </div>
         ))}
 
         {rows.length === 0 ? (
