@@ -60,7 +60,7 @@ export function PendingTableClient({ rows }: { rows: PendingRow[] }) {
     <div style={{ display: "grid", gap: 10 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <div style={{ fontSize: 12, color: "#475569" }}>
-          Pending items are loaded from DB. You can edit <b>reason</b> and save.
+          Pending items are loaded from DB. You can edit <b>備註</b> and save.
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export function PendingTableClient({ rows }: { rows: PendingRow[] }) {
             <tr style={{ background: "#F8FAFC" }}>
               <th style={thStyle}>Code</th>
               <th style={thStyle}>Title</th>
-              <th style={thStyle}>Reason</th>
+              <th style={thStyle}>備註</th>
               <th style={thStyle}>Action</th>
             </tr>
           </thead>

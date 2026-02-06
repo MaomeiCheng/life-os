@@ -64,7 +64,7 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
   return (
     <div style={{ display: "grid", gap: 10 }}>
       <div style={{ fontSize: 12, color: "#475569" }}>
-        Items are loaded from DB. Edit <b>reason</b> and save.
+        Items are loaded from DB. Edit <b>備註</b> and save.
       </div>
 
       <div style={{ border: "1px solid #E2E8F0", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
@@ -75,7 +75,7 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
               <th style={th}>Title</th>
               <th style={th}>Crown</th>
               <th style={th}>Card</th>
-              <th style={th}>Reason</th>
+              <th style={th}>備註</th>
               <th style={th}>Action</th>
             </tr>
           </thead>
