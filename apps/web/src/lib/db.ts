@@ -1,4 +1,5 @@
 import pkg from "@prisma/client";
+import type { PrismaClient as PrismaClientType } from "@prisma/client";
 const { PrismaClient } = pkg;
 
 import { Pool } from "pg";
@@ -10,7 +11,7 @@ if (!connectionString) {
 }
 
 const globalForPrisma = globalThis as unknown as {
-  __lifeos_prisma?: PrismaClient;
+  __lifeos_prisma?: PrismaClientType;
   __lifeos_pg_pool?: Pool;
 };
 

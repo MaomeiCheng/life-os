@@ -11,6 +11,49 @@ export const revalidate = 0;
 
 type AnyObj = Record<string, unknown>;
 
+type AuditRow = {
+  id: string;
+  entityType: string;
+  entityId: string;
+  action: string;
+  createdAt: Date;
+};
+
+type PendingRow = {
+  pendingId: string;
+  tempCode: string;
+  title: string;
+  reason: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type CrownItemRow = {
+  timelineIndex: number;
+  eventId: string;
+  crownDate: string;
+  title: string;
+  cardReceivedDate: string;
+  note: string;
+  reason: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type CardRow = {
+  id: string;
+  timelineIndex: number | null;
+  pendingId: string | null;
+  title: string;
+  videoUrl: string | null;
+  thumbUrl: string | null;
+  videoKey?: string | null;
+  thumbKey?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+
 function readJson(relPathFromWebRoot: string): AnyObj[] {
   const abs = path.resolve(process.cwd(), relPathFromWebRoot);
   const raw = fs.readFileSync(abs, "utf-8");
@@ -153,28 +196,50 @@ export default async function MusicSSOTPage({
   const tab = (sp.tab || "events").trim(); // events | items | pending | cards | audit
   const qn = q.toLowerCase();
 
+  const R2_BASE = (process.env.PUBLIC_R2_BASE_URL || "").replace(/\/$/, "");
+  function r2Url(key?: string | null, fallback?: string | null) {
+    const k = (key || "").trim();
+    if (k && R2_BASE) return `${R2_BASE}/${k.replace(/^\//, "")}`;
+    return (fallback || "").trim();
+  }
+
+
+
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
   const db2 = getDb();
-  const items = await db2.musicCrownItem.findMany({
+  const items: CrownItemRow[] = await db2.musicCrownItem.findMany({
     where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { note: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
     orderBy: [{ timelineIndex: "asc" }],
   });
 
   const itemsFiltered = items;
   const db = getDb();
-  const pending = await db.musicPending.findMany({
+  const pending: PendingRow[] = await db.musicPending.findMany({
     where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { tempCode: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
     orderBy: [{ tempCode: "asc" }],
   });
 
   const pendingFiltered = pending;
 
-  const audit = await db2.auditLog.findMany({
+  const audit: AuditRow[] = await db2.auditLog.findMany({
     orderBy: [{ createdAt: "desc" }],
     take: 200,
   });
 
-  const cards = await db2.musicCard.findMany({
+  const cards: CardRow[] = await db2.musicCard.findMany({
+    select: {
+      timelineIndex: true,
+        pendingId: true,
+        id: true,
+      title: true,
+      videoUrl: true,
+      thumbUrl: true,
+      videoKey: true,
+      thumbKey: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+
     orderBy: [{ createdAt: "desc" }],
   });
 
@@ -182,8 +247,8 @@ export default async function MusicSSOTPage({
     ? cards.filter(
         (c) =>
           normalize(c.title).includes(qn) ||
-          normalize(c.videoUrl).includes(qn) ||
-          normalize(c.thumbUrl).includes(qn)
+          normalize(r2Url(c.videoKey, c.videoUrl) || c.videoKey).includes(qn) ||
+          normalize(r2Url(c.thumbKey, c.thumbUrl) || c.thumbKey).includes(qn)
       )
     : cards;
 
@@ -383,7 +448,7 @@ export default async function MusicSSOTPage({
                 {cardsView.map((c) => (
                   <a
                     key={c.id}
-                    href={c.videoUrl}
+                    href={r2Url(c.videoKey, c.videoUrl)}
                     target="_blank"
                     rel="noreferrer"
                     style={{
@@ -397,10 +462,10 @@ export default async function MusicSSOTPage({
                     }}
                   >
                     <div style={{ aspectRatio: "16 / 9", background: "#0F172A" }}>
-                      {c.thumbUrl ? (
+                      {r2Url(c.thumbKey, c.thumbUrl) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={c.thumbUrl}
+                          src={r2Url(c.thumbKey, c.thumbUrl)}
                           alt={c.title}
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                         />

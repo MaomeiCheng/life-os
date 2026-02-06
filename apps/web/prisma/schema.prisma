@@ -55,6 +55,8 @@ model AuditLog {
 }
 
 model MusicCard {
+  videoKey String?
+  thumbKey String?
   id          String   @id @default(cuid())
   title       String
   timelineIndex Int?
