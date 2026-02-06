@@ -46,7 +46,7 @@ type CardRow = {
   timelineIndex: number | null;
   pendingId: string | null;
   title: string;
-  kind: string;
+  kind?: string;
   videoUrl: string | null;
   thumbUrl: string | null;
   videoKey?: string | null;
@@ -228,11 +228,11 @@ export default async function MusicSSOTPage({
     take: 200,
   });
 
-  const cardsRaw = await db2.musicCard.findMany({
+  const cards: CardRow[] = await db2.musicCard.findMany({
     select: {
       timelineIndex: true,
-        pendingId: true,
-        id: true,
+      pendingId: true,
+      id: true,
       title: true,
       videoUrl: true,
       thumbUrl: true,
@@ -241,17 +241,11 @@ export default async function MusicSSOTPage({
       createdAt: true,
       updatedAt: true,
     },
-
     orderBy: [
       { timelineIndex: "asc" },
       { createdAt: "asc" },
     ],
   });
-
-  const cards: CardRow[] = cardsRaw.map((c) => ({
-    ...c,
-    kind: (c as any).kind ?? "crown",
-  }));
 const cardsFiltered = q
     ? cards.filter(
         (c) =>
