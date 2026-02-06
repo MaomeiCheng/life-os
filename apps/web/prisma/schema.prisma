@@ -41,3 +41,15 @@ model MusicPending {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  action     String
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+}
