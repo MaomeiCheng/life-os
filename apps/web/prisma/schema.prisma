@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model MusicEvent {
+  id           String   @id // event_id
+  eventDate    String
+  plannedCount Int
+  decidedCount Int
+  status       String
+  note         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items        MusicCrownItem[]
+}
+
+model MusicCrownItem {
+  timelineIndex Int     @id
+  eventId       String
+  crownDate     String
+  title         String
+  cardReceivedDate String
+  note          String
+  reason        String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  event MusicEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+}
+
+model MusicPending {
+  pendingId String @id // pending_id (stable)
+  tempCode  String
+  title     String
+  reason    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

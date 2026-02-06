@@ -1,6 +1,9 @@
+import { getDb } from "@/lib/db";
+
 import fs from "node:fs";
 import path from "node:path";
 import Link from "next/link";
+import { PendingTableClient } from "./PendingTableClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -151,7 +154,14 @@ export default async function MusicSSOTPage({
 
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
   const items = readJson(path.join(ssotRel, "data/music/music_crown_items.json"));
-  const pending = readJson(path.join(ssotRel, "data/music/music_pending_list.json"));
+  const db = getDb();
+  const pending = await db.musicPending.findMany({
+    where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { tempCode: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
+    orderBy: [{ tempCode: "asc" }],
+  });
+
+  const pendingFiltered = pending;
+
 
   const lastEventDate = events
     .map((e) => e.event_date)
@@ -182,7 +192,7 @@ export default async function MusicSSOTPage({
 
   const pendingView = q
     ? pending.filter(
-        (p) => normalize(p.temp_code).includes(qn) || normalize(p.title).includes(qn)
+        (p) => normalize(p.tempCode).includes(qn) || normalize(p.title).includes(qn)
       )
     : pending;
 
@@ -342,16 +352,7 @@ export default async function MusicSSOTPage({
             />
           ) : null}
 
-          {tab === "pending" ? (
-            <Table
-              columns={[
-                { key: "temp_code", label: "Code", width: "90px" },
-                { key: "title", label: "Title" },
-                { key: "reason", label: "Reason" },
-              ]}
-              rows={pendingView}
-            />
-          ) : null}
+          {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
         </section>
 
         <footer style={{ marginTop: 14, fontSize: 12, color: "#94A3B8" }}>
