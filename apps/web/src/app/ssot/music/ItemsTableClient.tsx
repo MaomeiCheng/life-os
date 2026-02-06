@@ -14,16 +14,30 @@ type ItemRow = {
 
 export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
   const router = useRouter();
-  const [editing, setEditing] = React.useState<Record<number, string>>({});
+
+  const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
+  const [draftReason, setDraftReason] = React.useState<string>("");
+
   const [saving, setSaving] = React.useState<Record<number, boolean>>({});
   const [savedAt, setSavedAt] = React.useState<Record<number, number>>({});
+  const [errorById, setErrorById] = React.useState<Record<number, string | null>>({});
 
-  const getValue = (id: number, fallback: string) =>
-    Object.prototype.hasOwnProperty.call(editing, id) ? editing[id] : fallback;
+  function startEdit(r: ItemRow) {
+    setErrorById((m) => ({ ...m, [r.timelineIndex]: null }));
+    setEditingIndex(r.timelineIndex);
+    setDraftReason(r.reason || "");
+  }
+
+  function cancelEdit() {
+    setEditingIndex(null);
+    setDraftReason("");
+  }
 
   async function save(timelineIndex: number) {
-    const reason = (editing[timelineIndex] ?? "").trim();
+    const reason = draftReason.trim();
     setSaving((m) => ({ ...m, [timelineIndex]: true }));
+    setErrorById((m) => ({ ...m, [timelineIndex]: null }));
+
     try {
       const res = await fetch(
         `/api/ssot/music/items/${encodeURIComponent(String(timelineIndex))}/reason`,
@@ -34,8 +48,14 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
         }
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       setSavedAt((m) => ({ ...m, [timelineIndex]: Date.now() }));
       router.refresh();
+
+      setEditingIndex(null);
+      setDraftReason("");
+    } catch (e: any) {
+      setErrorById((m) => ({ ...m, [timelineIndex]: e?.message ?? "Save failed" }));
     } finally {
       setSaving((m) => ({ ...m, [timelineIndex]: false }));
     }
@@ -61,7 +81,7 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
           </thead>
           <tbody>
             {rows.map((r) => {
-              const v = getValue(r.timelineIndex, r.reason || "");
+              const isEditing = editingIndex === r.timelineIndex;
               const isSaving = !!saving[r.timelineIndex];
               const okFlash = !!savedAt[r.timelineIndex] && Date.now() - savedAt[r.timelineIndex] < 1200;
 
@@ -71,35 +91,81 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
                   <td style={td}>{r.title}</td>
                   <td style={tdMono}>{r.crownDate || "-"}</td>
                   <td style={tdMono}>{r.cardReceivedDate || "-"}</td>
+
                   <td style={td}>
-                    <input
-                      value={v}
-                      onChange={(e) => setEditing((m) => ({ ...m, [r.timelineIndex]: e.target.value }))}
-                      placeholder="(empty)"
-                      style={{
-                        width: "100%",
-                        padding: "8px 10px",
-                        borderRadius: 10,
-                        border: "1px solid #CBD5E1",
-                        outline: "none",
-                      }}
-                    />
+                    {!isEditing ? (
+                      <span style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{r.reason || ""}</span>
+                    ) : (
+                      <div style={{ display: "grid", gap: 6 }}>
+                        <input
+                          value={draftReason}
+                          onChange={(e) => setDraftReason(e.target.value)}
+                          placeholder="(empty)"
+                          disabled={isSaving}
+                          style={{
+                            width: "100%",
+                            padding: "8px 10px",
+                            borderRadius: 10,
+                            border: "1px solid #CBD5E1",
+                            outline: "none",
+                          }}
+                        />
+                        {errorById[r.timelineIndex] ? (
+                          <div style={{ fontSize: 12, color: "#DC2626" }}>{errorById[r.timelineIndex]}</div>
+                        ) : null}
+                      </div>
+                    )}
                   </td>
+
                   <td style={td}>
-                    <button
-                      onClick={() => save(r.timelineIndex)}
-                      disabled={isSaving}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: 10,
-                        border: "1px solid #CBD5E1",
-                        background: okFlash ? "#ECFDF5" : "#fff",
-                        cursor: isSaving ? "not-allowed" : "pointer",
-                        fontSize: 12,
-                      }}
-                    >
-                      {isSaving ? "Saving..." : okFlash ? "Saved" : "Save"}
-                    </button>
+                    {!isEditing ? (
+                      <button
+                        onClick={() => startEdit(r)}
+                        disabled={editingIndex !== null && editingIndex !== r.timelineIndex}
+                        style={{
+                          padding: "8px 12px",
+                          borderRadius: 10,
+                          border: "1px solid #CBD5E1",
+                          background: "#fff",
+                          cursor: editingIndex !== null && editingIndex !== r.timelineIndex ? "not-allowed" : "pointer",
+                          fontSize: 12,
+                        }}
+                      >
+                        Edit
+                      </button>
+                    ) : (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button
+                          onClick={() => save(r.timelineIndex)}
+                          disabled={isSaving}
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 10,
+                            border: "1px solid #CBD5E1",
+                            background: okFlash ? "#ECFDF5" : "#fff",
+                            cursor: isSaving ? "not-allowed" : "pointer",
+                            fontSize: 12,
+                          }}
+                        >
+                          {isSaving ? "Saving..." : okFlash ? "Saved" : "Save"}
+                        </button>
+
+                        <button
+                          onClick={cancelEdit}
+                          disabled={isSaving}
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 10,
+                            border: "1px solid #CBD5E1",
+                            background: "#fff",
+                            cursor: isSaving ? "not-allowed" : "pointer",
+                            fontSize: 12,
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               );
