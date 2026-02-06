@@ -1,3 +1,9 @@
+## Conversation rule (when starting a new chat for Deploy / UI)
+When we intentionally switch to a new chat, the first message must include:
+- repo link
+- latest commit
+- exactly one milestone
+
 # Next Steps (life-os)
 
 ## Music / Crown Cards
