@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 
 type ItemRow = {
   timelineIndex: number;
@@ -12,6 +13,7 @@ type ItemRow = {
 };
 
 export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
+  const router = useRouter();
   const [editing, setEditing] = React.useState<Record<number, string>>({});
   const [saving, setSaving] = React.useState<Record<number, boolean>>({});
   const [savedAt, setSavedAt] = React.useState<Record<number, number>>({});
@@ -33,6 +35,7 @@ export function ItemsTableClient({ rows }: { rows: ItemRow[] }) {
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setSavedAt((m) => ({ ...m, [timelineIndex]: Date.now() }));
+      router.refresh();
     } finally {
       setSaving((m) => ({ ...m, [timelineIndex]: false }));
     }
