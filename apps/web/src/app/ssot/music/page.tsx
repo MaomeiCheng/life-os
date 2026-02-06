@@ -46,6 +46,7 @@ type CardRow = {
   timelineIndex: number | null;
   pendingId: string | null;
   title: string;
+  kind: string;
   videoUrl: string | null;
   thumbUrl: string | null;
   videoKey?: string | null;
@@ -227,7 +228,7 @@ export default async function MusicSSOTPage({
     take: 200,
   });
 
-  const cards: CardRow[] = await db2.musicCard.findMany({
+  const cardsRaw = await db2.musicCard.findMany({
     select: {
       timelineIndex: true,
         pendingId: true,
@@ -247,7 +248,11 @@ export default async function MusicSSOTPage({
     ],
   });
 
-  const cardsView = q
+  const cards: CardRow[] = cardsRaw.map((c) => ({
+    ...c,
+    kind: (c as any).kind ?? "crown",
+  }));
+const cardsFiltered = q
     ? cards.filter(
         (c) =>
           normalize(c.title).includes(qn) ||
@@ -255,6 +260,9 @@ export default async function MusicSSOTPage({
           normalize(r2Url(c.thumbKey, c.thumbUrl) || c.thumbKey).includes(qn)
       )
     : cards;
+
+  const crownCardsView = cardsFiltered.filter((c) => (c.kind || "crown") === "crown");
+  const templateCardsView = cardsFiltered.filter((c) => c.kind === "template");
 
 
   const lastEventDate = events
@@ -294,12 +302,13 @@ export default async function MusicSSOTPage({
     { key: "events", label: "Events", count: events.length },
     { key: "items", label: "Crown Items", count: items.length },
     { key: "pending", label: "Pending", count: pending.length },
-    { key: "cards", label: "Cards", count: cards.length },
+    { key: "crownCards", label: "Crown Cards", count: cards.filter((c) => c.kind === "crown").length },
+    { key: "templateCards", label: "Template Cards", count: cards.filter((c) => c.kind === "template").length },
     { key: "audit", label: "Audit", count: audit.length },
   ] as const;
 
   const rowsCount =
-    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : tab === "cards" ? cardsView.length : audit.length;
+    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : tab === "cards" ? (crownCardsView.length + templateCardsView.length) : audit.length;
 
   return (
     <main
@@ -437,9 +446,9 @@ export default async function MusicSSOTPage({
 
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
 
-          {tab === "cards" ? (
+          {tab === "crownCards" ? (
             <CardsGridClient
-              rows={cardsView.map((c) => ({
+              rows={crownCardsView.map((c) => ({
                 id: c.id,
                 title: c.title,
                 timelineIndex: c.timelineIndex ?? null,
