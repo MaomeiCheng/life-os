@@ -3,3 +3,4 @@ backend/__pycache__/
 backend/modules/
 frontend/.env.local
 frontend/node_modules/
+dev-up.sh
