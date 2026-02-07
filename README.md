@@ -61,4 +61,8 @@ export AWS_PROFILE="lifeos-r2"
 
 Generate missing thumbnails + update DB (Codespaces):
 ./scripts/cards/generate-thumbs.sh
+UI notes:
+- Hover preview is muted.
+- Click to play with sound (browser may require user gesture; works on click).
+
 <!-- R2_WORKFLOW_END -->
