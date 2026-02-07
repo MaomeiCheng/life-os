@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import type { CardRowClient } from "./CardsGridClient";
 
 export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
@@ -202,28 +203,43 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                   e.stopPropagation();
                   toggleSound(c.id);
                 }}
+                onPointerDown={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.96)";
+                }}
+                onPointerUp={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+                }}
+                onPointerCancel={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+                }}
                 aria-label={soundId === c.id ? "Mute" : "Unmute"}
                 style={{
                   position: "absolute",
                   top: 10,
                   right: 10,
                   zIndex: 5,
-                  width: 38,
-                  height: 38,
+                  width: 40,
+                  height: 40,
                   borderRadius: 999,
-                  border: "1px solid rgba(255,255,255,0.35)",
-                  background: "rgba(15, 23, 42, 0.45)",
+                  border: "1px solid rgba(255,255,255,0.32)",
+                  background: soundId === c.id ? "rgba(2, 6, 23, 0.60)" : "rgba(15, 23, 42, 0.45)",
                   color: "white",
                   display: "grid",
                   placeItems: "center",
-                  backdropFilter: "blur(6px)",
-                  WebkitBackdropFilter: "blur(6px)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
                   cursor: "pointer",
+                  boxShadow: "0 8px 18px rgba(0,0,0,0.22)",
+                  transition: "transform 120ms ease, background 120ms ease, opacity 120ms ease",
+                  opacity: 0.92,
+                  userSelect: "none",
                 }}
               >
-                <span style={{ fontSize: 18, lineHeight: 1 }}>
-                  {soundId === c.id ? "🔊" : "🔇"}
-                </span>
+                {soundId === c.id ? (
+                  <Volume2 size={18} />
+                ) : (
+                  <VolumeX size={18} />
+                )}
               </button>
 
               <video
