@@ -73,4 +73,8 @@ UI notes:
 - Hover preview is muted.
 - Click to play with sound (browser may require user gesture; works on click).
 
+Known issues (mobile browsers/iOS):
+- Tapping "Open" may open a new page/tab. Closing it can sometimes return to a previously opened card page (browser/in-app WebView history behavior). Not treated as an app bug.
+- Workaround: open in Safari (system browser) or prefer in-page playback. Optionally add "Copy link"/"Share" later.
+
 <!-- R2_WORKFLOW_END -->
