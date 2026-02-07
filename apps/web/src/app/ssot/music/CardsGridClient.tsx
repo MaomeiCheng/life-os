@@ -7,15 +7,15 @@ export type CardRowClient = {
   title: string;
   timelineIndex: number | null;
   pendingId: string | null;
-  videoSrc: string;   // resolved URL (server already derived)
-  thumbSrc: string;   // resolved URL (server already derived, can be "")
+  videoSrc: string;
+  thumbSrc: string;
 };
 
 export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
-  const [hoverId, setHoverId] = React.useState<string | null>(null);
-  const [activeId, setActiveId] = React.useState<string | null>(null);
-  const [soundId, setSoundId] = React.useState<string | null>(null);
   const videoRefs = React.useRef<Record<string, HTMLVideoElement | null>>({});
+  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [hoverId, setHoverId] = React.useState<string | null>(null);
+  const [soundId, setSoundId] = React.useState<string | null>(null);
 
   function stop(id: string) {
     const v = videoRefs.current[id];
@@ -28,60 +28,65 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     setSoundId((prev) => (prev === id ? null : prev));
   }
 
-  function toggle(id: string) {
-    if (activeId === id) {
-      setActiveId(null);
-      stop(id);
-      return;
-    }
-    setActiveId(id);
-    play(id, { muted: true });
-  }
-
   function play(id: string, opts?: { muted?: boolean }) {
     if (hoverId && hoverId !== id) stop(hoverId);
     setHoverId(id);
+
     const v = videoRefs.current[id];
     if (!v) return;
-    v.muted = opts?.muted ?? true;
+
+    const wantMuted = opts?.muted ?? true;
+    v.muted = wantMuted;
     v.playsInline = true;
+
+    if (!wantMuted) setSoundId(id);
     v.play().catch(() => {});
+  }
+
+  function toggleActive(id: string) {
+    if (activeId === id) {
+      stop(id);
+      setActiveId(null);
+      return;
+    }
+    setActiveId(id);
+    // click on card = start playback, but keep muted (sound controlled by icon)
+    play(id, { muted: true });
   }
 
   function toggleSound(id: string) {
     const v = videoRefs.current[id];
     if (!v) return;
-    // If not active, start unmuted
+
+    // if not active, start it first (muted -> then unmute)
     if (activeId !== id) {
       setActiveId(id);
-      play(id, { muted: true });
+      play(id, { muted: false });
       return;
     }
+
     const nextMuted = !v.muted;
     v.muted = nextMuted;
     setSoundId(nextMuted ? null : id);
+
     if (!nextMuted) v.play().catch(() => {});
   }
 
   return (
-    <div style={{ padding: 14 }}>
-      <div style={{ fontSize: 12, color: "#64748B", marginBottom: 10 }}>
-        Video cards. Hover to preview (muted). Click to open.
-      </div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+        gap: 14,
+      }}
+    >
+      {rows.map((c) => {
+        const isActive = activeId === c.id;
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 12,
-        }}
-      >
-        {rows.map((c) => (
+        return (
           <div
             key={c.id}
             style={{
-              display: "block",
-              textDecoration: "none",
               border: "1px solid #E5E7EB",
               borderRadius: 16,
               overflow: "hidden",
@@ -90,12 +95,13 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
             }}
           >
             <div
-              style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}
-              onClick={() => toggle(c.id)}
+              style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative", cursor: "pointer" }}
+              onClick={() => toggleActive(c.id)}
               onMouseEnter={() => play(c.id, { muted: true })}
               onMouseLeave={() => {
                 setHoverId((prev) => (prev === c.id ? null : prev));
-                stop(c.id);
+                // if it isn't the active one, stop on leave
+                if (activeId !== c.id) stop(c.id);
               }}
             >
               {c.thumbSrc ? (
@@ -103,22 +109,15 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                 <img
                   src={c.thumbSrc}
                   alt={c.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
-              ) : (
-                <div
                   style={{
                     width: "100%",
                     height: "100%",
-                    display: "grid",
-                    placeItems: "center",
-                    color: "#94A3B8",
-                    fontSize: 12,
+                    objectFit: "cover",
+                    display: (isActive || hoverId === c.id) ? "none" : "block",
                   }}
-                >
-                  No thumbnail
-                </div>
-              )}
+                />
+              ) : null}
+
               <button
                 type="button"
                 onClick={(e) => {
@@ -147,26 +146,45 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
               >
                 {soundId === c.id ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                    <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path
+                      d="M11 5L6 9H3v6h3l5 4V5z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M15.5 8.5a5 5 0 0 1 0 7"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M18 6a8.5 8.5 0 0 1 0 12"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 ) : (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    <path
+                      d="M11 5L6 9H3v6h3l5 4V5z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
                     <path d="M16 9l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     <path d="M21 9l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 )}
               </button>
 
-
               <video
                 ref={(el) => {
                   videoRefs.current[c.id] = el;
                 }}
                 src={c.videoSrc}
-                muted
+                muted={soundId !== c.id}
                 playsInline
                 preload="metadata"
                 style={{
@@ -175,29 +193,32 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  display: hoverId === c.id || activeId === c.id ? "block" : "none",
+                  display: (isActive || hoverId === c.id) ? "block" : "none",
                 }}
               />
             </div>
 
-            <div style={{ padding: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
-              <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
-                <div style={{ marginTop: 8 }}>
-                  <a href={c.videoSrc} target="_blank" rel="noreferrer" style={{ fontSize: 12, fontWeight: 900, color: "#0F172A", textDecoration: "underline" }}>
-                    Open
-                  </a>
+            <div style={{ padding: 10, display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
+                <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
+                  {c.timelineIndex != null ? `#${c.timelineIndex}` : c.pendingId ? c.pendingId : ""}
                 </div>
-                {c.timelineIndex != null ? `#${c.timelineIndex}` : c.pendingId ? c.pendingId : ""}
               </div>
+
+              <a
+                href={c.videoSrc}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontSize: 12, fontWeight: 900, color: "#0F172A", textDecoration: "underline", whiteSpace: "nowrap" }}
+              >
+                Open
+              </a>
             </div>
           </div>
-        ))}
-
-        {rows.length === 0 ? (
-          <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div>
-        ) : null}
-      </div>
+        );
+      })}
+      {rows.length === 0 ? <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div> : null}
     </div>
   );
 }
