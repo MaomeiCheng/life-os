@@ -308,7 +308,7 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (c.videoSrc) window.open(c.videoSrc, "_blank", "noopener,noreferrer");
+                    if (c.videoSrc) window.open(c.videoSrc, `card_${Date.now()}_${Math.random().toString(36).slice(2)}`, "noopener,noreferrer");
                   }}
                   style={{
                     fontSize: 12,
