@@ -63,6 +63,7 @@ Generate missing thumbnails + update DB (Codespaces):
 ./scripts/cards/generate-thumbs.sh
 
 Flow (recommended order):
+(Details: docs/cards-workflow.md)
 1) Upload mp4 to R2 from Mac
 2) Bulk import missing cards into DB: apps/web/scripts/cards/import-from-r2.sh
 3) Generate missing thumbnails: apps/web/scripts/cards/generate-thumbs.sh
