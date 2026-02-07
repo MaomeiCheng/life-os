@@ -10,6 +10,7 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
   const rafRef = React.useRef<number | null>(null);
 
   const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [soundId, setSoundId] = React.useState<string | null>(null);
 
   function stop(id: string) {
     const v = videoRefs.current[id];
@@ -17,17 +18,46 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
     try {
       v.pause();
       v.currentTime = 0;
+      v.muted = true;
     } catch {}
+    setSoundId((prev) => (prev === id ? null : prev));
   }
 
   function play(id: string, opts?: { muted?: boolean }) {
     if (activeId && activeId !== id) stop(activeId);
     setActiveId(id);
+
     const v = videoRefs.current[id];
     if (!v) return;
-    v.muted = opts?.muted ?? true;
+
+    const wantMuted = opts?.muted ?? true;
+
+    // auto preview should always be muted
+    v.muted = wantMuted;
     v.playsInline = true;
+
+    if (!wantMuted) setSoundId(id);
     v.play().catch(() => {});
+  }
+
+  function toggleSound(id: string) {
+    const v = videoRefs.current[id];
+    if (!v) return;
+
+    // If this card is not active, start it first (muted -> then unmute)
+    if (activeId !== id) {
+      play(id, { muted: false });
+      return;
+    }
+
+    // active: toggle mute
+    const nextMuted = !v.muted;
+    v.muted = nextMuted;
+    setSoundId(nextMuted ? null : id);
+
+    if (!nextMuted) {
+      v.play().catch(() => {});
+    }
   }
 
   React.useEffect(() => {
@@ -71,10 +101,27 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
         }
       }
 
-      if (bestId) play(bestId, { muted: true });
+      if (bestId) {
+        // stop any previously active video to prevent overlap/jank
+        if (activeId && activeId != bestId) stop(activeId);
+        play(bestId, { muted: true });
+      }
     };
 
+    let settleTimer: number | null = null;
+
     const onScroll = () => {
+      // immediate: reduce perceived lag while dragging
+      pickBest();
+
+      // trailing: after scroll settles, re-pick (fixes "already on next card but still playing previous")
+      if (settleTimer != null) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        settleTimer = null;
+        pickBest();
+      }, 120);
+
+      // rAF: cheap throttling for rapid scroll events
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
         rafRef.current = null;
@@ -90,6 +137,8 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
       root.removeEventListener("scroll", onScroll);
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
+      if (settleTimer != null) window.clearTimeout(settleTimer);
+      settleTimer = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows.length]);
@@ -109,7 +158,7 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
 
         // scroll snap often causes "whole page feels stuck/janky" on iOS;
         // keep it soft instead of mandatory.
-        scrollSnapType: "y proximity",
+        scrollSnapType: "none",
       }}
     >
       {rows.map((c) => (
@@ -132,28 +181,6 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
           >
             <div style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}>
               {/* sound button (do not block scroll gestures) */}
-              <button
-                type="button"
-                onClick={() => play(c.id, { muted: false })}
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  zIndex: 10,
-                  padding: "6px 10px",
-                  borderRadius: 999,
-                  border: "1px solid rgba(255,255,255,0.35)",
-                  background: "rgba(15, 23, 42, 0.55)",
-                  color: "white",
-                  fontSize: 12,
-                  fontWeight: 900,
-                  cursor: "pointer",
-                }}
-                aria-label="Play with sound"
-              >
-                Sound
-              </button>
-
               {c.thumbSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -167,6 +194,37 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                   }}
                 />
               ) : null}
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSound(c.id);
+                }}
+                aria-label={soundId === c.id ? "Mute" : "Unmute"}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 5,
+                  width: 38,
+                  height: 38,
+                  borderRadius: 999,
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  background: "rgba(15, 23, 42, 0.45)",
+                  color: "white",
+                  display: "grid",
+                  placeItems: "center",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ fontSize: 18, lineHeight: 1 }}>
+                  {soundId === c.id ? "🔊" : "🔇"}
+                </span>
+              </button>
 
               <video
                 ref={(el) => {
@@ -222,6 +280,9 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
         </div>
       ))}
       {rows.length === 0 ? <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div> : null}
+
+      {/* spacer: allow last card to reach the detection zone */}
+      <div data-scroll-spacer style={{ height: "35vh" }} />
     </div>
   );
 }
