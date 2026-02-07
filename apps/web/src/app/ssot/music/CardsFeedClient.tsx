@@ -6,6 +6,9 @@ import type { CardRowClient } from "./CardsGridClient";
 export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const videoRefs = React.useRef<Record<string, HTMLVideoElement | null>>({});
+  const cardNodesRef = React.useRef<HTMLElement[]>([]);
+  const rafRef = React.useRef<number | null>(null);
+
   const [activeId, setActiveId] = React.useState<string | null>(null);
 
   function stop(id: string) {
@@ -17,12 +20,12 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
     } catch {}
   }
 
-  function play(id: string) {
+  function play(id: string, opts?: { muted?: boolean }) {
     if (activeId && activeId !== id) stop(activeId);
     setActiveId(id);
     const v = videoRefs.current[id];
     if (!v) return;
-    v.muted = true;
+    v.muted = opts?.muted ?? true;
     v.playsInline = true;
     v.play().catch(() => {});
   }
@@ -31,43 +34,63 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
     const root = containerRef.current;
     if (!root) return;
 
-    const thresholds = [0, 0.25, 0.5, 0.75, 1];
-    const io = new IntersectionObserver(
-      (entries) => {
-        // pick the entry closest to viewport center among visible ones
-        const vh = window.innerHeight || 1;
-        const centerY = vh / 2;
+    // cache nodes once per rows change
+    cardNodesRef.current = Array.from(root.querySelectorAll<HTMLElement>("[data-card-id]"));
 
-        let best: { id: string; score: number } | null = null;
-        for (const e of entries) {
-          const el = e.target as HTMLElement;
-          const id = el.dataset.cardId;
-          if (!id) continue;
+    const pickBest = () => {
+      const r = root.getBoundingClientRect();
+      const centerY = r.top + r.height * 0.35;
 
-          if (!e.isIntersecting) continue;
+      let bestId: string | null = null;
+      let bestScore = -Infinity;
 
-          const r = e.boundingClientRect;
-          const elemCenter = (r.top + r.bottom) / 2;
-          const dist = Math.abs(elemCenter - centerY);
-          // score: higher is better
-          const score = (e.intersectionRatio * 1000) - dist;
-          if (!best || score > best.score) {
-            best = { id, score };
-          }
+      for (const el of cardNodesRef.current) {
+        const id = el.dataset.cardId;
+        if (!id) continue;
+
+        const b = el.getBoundingClientRect();
+
+        // compute overlap with container viewport (avoid picking offscreen)
+        const overlapTop = Math.max(b.top, r.top);
+        const overlapBottom = Math.min(b.bottom, r.bottom);
+        const overlap = Math.max(0, overlapBottom - overlapTop);
+        const visibleRatio = overlap / Math.max(1, b.height);
+
+        if (visibleRatio <= 0) continue;
+
+        const elemCenter = (b.top + b.bottom) / 2;
+        const dist = Math.abs(elemCenter - centerY);
+
+        // higher score is better:
+        // prefer more visible + closer to center
+        const score = visibleRatio * 1000 - dist;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestId = id;
         }
-
-        if (best) play(best.id);
-      },
-      {
-        root: null,
-        threshold: thresholds,
       }
-    );
 
-    const nodes = Array.from(root.querySelectorAll("[data-card-id]"));
-    nodes.forEach((n) => io.observe(n));
+      if (bestId) play(bestId, { muted: true });
+    };
 
-    return () => io.disconnect();
+    const onScroll = () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        pickBest();
+      });
+    };
+
+    // run once on mount (after nodes cached)
+    pickBest();
+
+    root.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      root.removeEventListener("scroll", onScroll);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows.length]);
 
@@ -77,8 +100,16 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
       style={{
         height: "70vh",
         overflowY: "auto",
-        scrollSnapType: "y mandatory",
         borderRadius: 16,
+
+        // critical for mobile: keep scroll inside this container
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
+        touchAction: "pan-y",
+
+        // scroll snap often causes "whole page feels stuck/janky" on iOS;
+        // keep it soft instead of mandatory.
+        scrollSnapType: "y proximity",
       }}
     >
       {rows.map((c) => (
@@ -100,6 +131,29 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
             }}
           >
             <div style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}>
+              {/* sound button (do not block scroll gestures) */}
+              <button
+                type="button"
+                onClick={() => play(c.id, { muted: false })}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 10,
+                  padding: "6px 10px",
+                  borderRadius: 999,
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  background: "rgba(15, 23, 42, 0.55)",
+                  color: "white",
+                  fontSize: 12,
+                  fontWeight: 900,
+                  cursor: "pointer",
+                }}
+                aria-label="Play with sound"
+              >
+                Sound
+              </button>
+
               {c.thumbSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -133,7 +187,15 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
               />
             </div>
 
-            <div style={{ padding: 10, display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
+            <div
+              style={{
+                padding: 10,
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
               <div>
                 <div style={{ fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{c.title}</div>
                 <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
@@ -145,7 +207,13 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                 href={c.videoSrc}
                 target="_blank"
                 rel="noreferrer"
-                style={{ fontSize: 12, fontWeight: 900, color: "#0F172A", textDecoration: "underline", whiteSpace: "nowrap" }}
+                style={{
+                  fontSize: 12,
+                  fontWeight: 900,
+                  color: "#0F172A",
+                  textDecoration: "underline",
+                  whiteSpace: "nowrap",
+                }}
               >
                 Open
               </a>
