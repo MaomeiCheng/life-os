@@ -26,7 +26,7 @@ async function main() {
 
   const musicDir = path.join(ssotAbs, "data", "music");
   const events = readJson(path.join(musicDir, "music_events.json"));
-  const items = readJson(path.join(musicDir, "music_crown_items.json"));
+  const items = readJson(path.join(musicDir, "music_crown_items.seed.json"));
   const pending = readJson(path.join(musicDir, "music_pending_list.json"));
 
   for (const e of events) {
