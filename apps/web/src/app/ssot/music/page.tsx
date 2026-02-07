@@ -243,7 +243,7 @@ export default async function MusicSSOTPage({
     },
     orderBy: [
       { timelineIndex: "asc" },
-      { createdAt: "asc" },
+      { videoKey: "asc" },
     ],
   });
 const cardsFiltered = q
