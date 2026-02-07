@@ -28,9 +28,21 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     setSoundId((prev) => (prev === id ? null : prev));
   }
 
+  function stopAllExcept(keepId: string) {
+    for (const [id, v] of Object.entries(videoRefs.current)) {
+      if (!v) continue;
+      if (id === keepId) continue;
+      try {
+        v.pause();
+        v.currentTime = 0;
+        v.muted = true;
+      } catch {}
+    }
+    setSoundId((prev) => (prev && prev !== keepId ? null : prev));
+  }
+
   function play(id: string, opts?: { muted?: boolean }) {
-    if (hoverId && hoverId !== id) stop(hoverId);
-    setHoverId(id);
+    stopAllExcept(id);
 
     const v = videoRefs.current[id];
     if (!v) return;
@@ -39,28 +51,18 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     v.muted = wantMuted;
     v.playsInline = true;
 
-    if (!wantMuted) setSoundId(id);
-    v.play().catch(() => {});
-  }
+    setSoundId(wantMuted ? null : id);
 
-  function toggleActive(id: string) {
-    if (activeId === id) {
-      stop(id);
-      setActiveId(null);
-      return;
-    }
-    setActiveId(id);
-    // click on card = start playback, but keep muted (sound controlled by icon)
-    play(id, { muted: true });
+    v.play().catch(() => {});
   }
 
   function toggleSound(id: string) {
     const v = videoRefs.current[id];
     if (!v) return;
 
-    // if not active, start it first (muted -> then unmute)
-    if (activeId !== id) {
-      setActiveId(id);
+    stopAllExcept(id);
+
+    if (v.paused) {
       play(id, { muted: false });
       return;
     }
@@ -70,6 +72,17 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     setSoundId(nextMuted ? null : id);
 
     if (!nextMuted) v.play().catch(() => {});
+  }
+
+  function toggleActive(id: string) {
+    if (activeId === id) {
+      setActiveId(null);
+      stop(id);
+      return;
+    }
+    setActiveId(id);
+    // active should remain muted unless user taps speaker
+    play(id, { muted: true });
   }
 
   return (
@@ -82,6 +95,8 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     >
       {rows.map((c) => {
         const isActive = activeId === c.id;
+        const isHover = hoverId === c.id;
+        const showVideo = isActive || isHover;
 
         return (
           <div
@@ -97,10 +112,14 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
             <div
               style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative", cursor: "pointer" }}
               onClick={() => toggleActive(c.id)}
-              onMouseEnter={() => play(c.id, { muted: true })}
+              onMouseEnter={() => {
+                setHoverId(c.id);
+                // if this card is the one with sound enabled, keep it unmuted on hover-back
+                play(c.id, { muted: soundId === c.id ? false : true });
+              }}
               onMouseLeave={() => {
                 setHoverId((prev) => (prev === c.id ? null : prev));
-                // if it isn't the active one, stop on leave
+                // if not active, stop on leave
                 if (activeId !== c.id) stop(c.id);
               }}
             >
@@ -113,7 +132,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    display: (isActive || hoverId === c.id) ? "none" : "block",
+                    display: showVideo ? "none" : "block",
                   }}
                 />
               ) : null}
@@ -146,33 +165,13 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
               >
                 {soundId === c.id ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="M11 5L6 9H3v6h3l5 4V5z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M15.5 8.5a5 5 0 0 1 0 7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M18 6a8.5 8.5 0 0 1 0 12"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 ) : (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="M11 5L6 9H3v6h3l5 4V5z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
                     <path d="M16 9l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     <path d="M21 9l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
@@ -184,7 +183,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   videoRefs.current[c.id] = el;
                 }}
                 src={c.videoSrc}
-                muted={soundId !== c.id}
+                muted
                 playsInline
                 preload="metadata"
                 style={{
@@ -193,7 +192,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  display: (isActive || hoverId === c.id) ? "block" : "none",
+                  display: showVideo ? "block" : "none",
                 }}
               />
             </div>
@@ -218,7 +217,6 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
           </div>
         );
       })}
-      {rows.length === 0 ? <div style={{ padding: 12, color: "#64748B", fontSize: 13 }}>No cards</div> : null}
     </div>
   );
 }
