@@ -67,6 +67,8 @@ Flow (recommended order):
 2) Bulk import missing cards into DB: apps/web/scripts/cards/import-from-r2.sh
 3) Generate missing thumbnails: apps/web/scripts/cards/generate-thumbs.sh
 4) Sync card titles from crown items: apps/web/scripts/cards/sync-from-crown-items.sh
+
+When you edit crown item titles (MusicCrownItem), rerun step 4 to refresh card titles.
 UI notes:
 - Hover preview is muted.
 - Click to play with sound (browser may require user gesture; works on click).
