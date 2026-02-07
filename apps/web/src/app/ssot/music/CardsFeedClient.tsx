@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import type { CardRowClient } from "./CardsGridClient";
 
 export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
@@ -25,13 +24,16 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
   }
 
   function play(id: string, opts?: { muted?: boolean }) {
+    // do not restart if already active and state matches
+    const v = videoRefs.current[id];
+    if (!v) return;
+    const wantMuted = opts?.muted ?? true;
+    if (activeId === id && v.muted === wantMuted && !v.paused) return;
     if (activeId && activeId !== id) stop(activeId);
     setActiveId(id);
 
-    const v = videoRefs.current[id];
+    
     if (!v) return;
-
-    const wantMuted = opts?.muted ?? true;
 
     // auto preview should always be muted
     v.muted = wantMuted;
@@ -102,9 +104,8 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
         }
       }
 
-      if (bestId) {
-        // stop any previously active video to prevent overlap/jank
-        if (activeId && activeId != bestId) stop(activeId);
+      if (bestId && bestId !== activeId) {
+        if (activeId) stop(activeId);
         play(bestId, { muted: true });
       }
     };
@@ -112,15 +113,12 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
     let settleTimer: number | null = null;
 
     const onScroll = () => {
-      // immediate: reduce perceived lag while dragging
-      pickBest();
-
-      // trailing: after scroll settles, re-pick (fixes "already on next card but still playing previous")
+            // trailing: after scroll settles, re-pick (fixes "already on next card but still playing previous")
       if (settleTimer != null) window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
         settleTimer = null;
         pickBest();
-      }, 120);
+      }, 80);
 
       // rAF: cheap throttling for rapid scroll events
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
@@ -150,6 +148,7 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
       style={{
         height: "70vh",
         overflowY: "auto",
+        scrollBehavior: "auto",
         borderRadius: 16,
 
         // critical for mobile: keep scroll inside this container
@@ -236,11 +235,19 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                 }}
               >
                 {soundId === c.id ? (
-                  <Volume2 size={18} />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                    <path d="M15.5 8.5a5 5 0 010 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M18 6a8 8 0 010 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                 ) : (
-                  <VolumeX size={18} />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                    <path d="M16 9l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M21 9l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                 )}
-              </button>
+</button>
 
               <video
                 ref={(el) => {
