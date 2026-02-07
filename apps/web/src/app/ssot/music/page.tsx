@@ -444,37 +444,38 @@ const cardsFiltered = q
           {tab === "crownCards" ? (
             <>
               <style>{`
-                .onlyMobile { display: block; }
-                .onlyDesktop { display: none; }
-                @media (min-width: 768px) {
-                  .onlyMobile { display: none; }
-                  .onlyDesktop { display: block; }
+                /* desktop: grid, mobile: feed */
+                .cardsDesktop { display: none; }
+                .cardsMobile { display: block; }
+                @media (min-width: 1024px) {
+                  .cardsDesktop { display: block; }
+                  .cardsMobile { display: none; }
                 }
               `}</style>
 
-              <div className="onlyDesktop">
+              <div className="cardsDesktop">
                 <CardsGridClient
                   rows={crownCardsView.map((c) => ({
-                    id: c.id,
-                    title: c.title,
-                    timelineIndex: c.timelineIndex ?? null,
-                    pendingId: c.pendingId ?? null,
-                    videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
-                    thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
-                  }))}
+                id: c.id,
+                title: c.title,
+                timelineIndex: c.timelineIndex ?? null,
+                pendingId: c.pendingId ?? null,
+                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+              }))}
                 />
               </div>
 
-              <div className="onlyMobile">
+              <div className="cardsMobile">
                 <CardsFeedClient
                   rows={crownCardsView.map((c) => ({
-                    id: c.id,
-                    title: c.title,
-                    timelineIndex: c.timelineIndex ?? null,
-                    pendingId: c.pendingId ?? null,
-                    videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
-                    thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
-                  }))}
+                id: c.id,
+                title: c.title,
+                timelineIndex: c.timelineIndex ?? null,
+                pendingId: c.pendingId ?? null,
+                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+              }))}
                 />
               </div>
             </>
