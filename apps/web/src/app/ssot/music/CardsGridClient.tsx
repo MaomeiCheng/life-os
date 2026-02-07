@@ -32,15 +32,15 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
       return;
     }
     setActiveId(id);
-    play(id);
+    play(id, { muted: false });
   }
 
-  function play(id: string) {
+  function play(id: string, opts?: { muted?: boolean }) {
     if (hoverId && hoverId !== id) stop(hoverId);
     setHoverId(id);
     const v = videoRefs.current[id];
     if (!v) return;
-    v.muted = true;
+    v.muted = opts?.muted ?? true;
     v.playsInline = true;
     v.play().catch(() => {});
   }
@@ -74,7 +74,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
             <div
               style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}
               onClick={() => toggle(c.id)}
-              onMouseEnter={() => play(c.id)}
+              onMouseEnter={() => play(c.id, { muted: true })}
               onMouseLeave={() => {
                 setHoverId((prev) => (prev === c.id ? null : prev));
                 stop(c.id);
