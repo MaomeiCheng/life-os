@@ -14,6 +14,7 @@ export type CardRowClient = {
 export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
   const [hoverId, setHoverId] = React.useState<string | null>(null);
   const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [soundId, setSoundId] = React.useState<string | null>(null);
   const videoRefs = React.useRef<Record<string, HTMLVideoElement | null>>({});
 
   function stop(id: string) {
@@ -22,7 +23,9 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     try {
       v.pause();
       v.currentTime = 0;
+      v.muted = true;
     } catch {}
+    setSoundId((prev) => (prev === id ? null : prev));
   }
 
   function toggle(id: string) {
@@ -32,7 +35,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
       return;
     }
     setActiveId(id);
-    play(id, { muted: false });
+    play(id, { muted: true });
   }
 
   function play(id: string, opts?: { muted?: boolean }) {
@@ -43,6 +46,21 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
     v.muted = opts?.muted ?? true;
     v.playsInline = true;
     v.play().catch(() => {});
+  }
+
+  function toggleSound(id: string) {
+    const v = videoRefs.current[id];
+    if (!v) return;
+    // If not active, start unmuted
+    if (activeId !== id) {
+      setActiveId(id);
+      play(id, { muted: true });
+      return;
+    }
+    const nextMuted = !v.muted;
+    v.muted = nextMuted;
+    setSoundId(nextMuted ? null : id);
+    if (!nextMuted) v.play().catch(() => {});
   }
 
   return (
@@ -101,6 +119,47 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   No thumbnail
                 </div>
               )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSound(c.id);
+                }}
+                aria-label={soundId === c.id ? "Mute" : "Unmute"}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 5,
+                  width: 38,
+                  height: 38,
+                  borderRadius: 999,
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  background: "rgba(15, 23, 42, 0.45)",
+                  color: "white",
+                  display: "grid",
+                  placeItems: "center",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
+                  cursor: "pointer",
+                }}
+              >
+                {soundId === c.id ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    <path d="M16 9l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M21 9l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
+
 
               <video
                 ref={(el) => {
