@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PendingTableClient } from "./PendingTableClient";
 import { ItemsTableClient } from "./ItemsTableClient";
 import { CardsGridClient } from "./CardsGridClient";
+import { CardsFeedClient } from "./CardsFeedClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -441,16 +442,42 @@ const cardsFiltered = q
           {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
 
           {tab === "crownCards" ? (
-            <CardsGridClient
-              rows={crownCardsView.map((c) => ({
-                id: c.id,
-                title: c.title,
-                timelineIndex: c.timelineIndex ?? null,
-                pendingId: c.pendingId ?? null,
-                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
-                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
-              }))}
-            />
+            <>
+              <style>{`
+                .onlyMobile { display: block; }
+                .onlyDesktop { display: none; }
+                @media (min-width: 768px) {
+                  .onlyMobile { display: none; }
+                  .onlyDesktop { display: block; }
+                }
+              `}</style>
+
+              <div className="onlyDesktop">
+                <CardsGridClient
+                  rows={crownCardsView.map((c) => ({
+                    id: c.id,
+                    title: c.title,
+                    timelineIndex: c.timelineIndex ?? null,
+                    pendingId: c.pendingId ?? null,
+                    videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                    thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+                  }))}
+                />
+              </div>
+
+              <div className="onlyMobile">
+                <CardsFeedClient
+                  rows={crownCardsView.map((c) => ({
+                    id: c.id,
+                    title: c.title,
+                    timelineIndex: c.timelineIndex ?? null,
+                    pendingId: c.pendingId ?? null,
+                    videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                    thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+                  }))}
+                />
+              </div>
+            </>
           ) : null}
 
           {tab === "audit" ? (
