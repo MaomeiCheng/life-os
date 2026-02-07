@@ -205,14 +205,27 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                 </div>
               </div>
 
-              <a
-                href={c.videoSrc}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: 12, fontWeight: 900, color: "#0F172A", textDecoration: "underline", whiteSpace: "nowrap" }}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (c.videoSrc) window.open(c.videoSrc, "_blank", "noopener,noreferrer");
+                }}
+                style={{
+                  fontSize: 12,
+                  fontWeight: 900,
+                  color: "#0F172A",
+                  textDecoration: "underline",
+                  whiteSpace: "nowrap",
+                  background: "transparent",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
               >
                 Open
-              </a>
+              </button>
             </div>
           </div>
         );
