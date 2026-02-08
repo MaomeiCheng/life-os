@@ -294,11 +294,11 @@ const cardsFiltered = q
     : pending;
 
   const tabs = [
-    { key: "events", label: "Events", count: events.length },
-    { key: "items", label: "Crown Items", count: items.length },
-    { key: "pending", label: "Pending", count: pending.length },
-    { key: "crownCards", label: "Crown Cards", count: cards.filter((c) => c.kind === "crown").length },
-    { key: "templateCards", label: "Template Cards", count: cards.filter((c) => c.kind === "template").length },
+    { key: "events", label: "Events", count: eventsView.length },
+    { key: "items", label: "Crown Items", count: itemsView.length },
+    { key: "pending", label: "Pending", count: pendingView.length },
+    { key: "crownCards", label: "Crown Cards", count: crownCardsView.length },
+    { key: "templateCards", label: "Template Cards", count: templateCardsView.length },
     { key: "audit", label: "Audit", count: audit.length },
   ] as const;
 
