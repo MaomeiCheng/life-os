@@ -44,3 +44,16 @@
 - 不要在 `bash -lc '...'` 裡面塞多層引號或 heredoc；容易被 shell 提前結束，導致「跳進互動/語法錯誤」。
 - 建議做法：先把腳本/程式寫入檔案（`cat > file <<'EOF' ... EOF`），再 `bash file` 或 `python3 file.py` 執行。
 - 一律使用 `set -euo pipefail`，並在需要的地方加上 `|| true` 或明確的錯誤處理，避免半途中斷造成不一致狀態。
+
+## 2026-02-08 Security hardening (env + R2 + docs)
+- Env files are now ignored and untracked:
+  - apps/web/.env, apps/web/.env.local, apps/web/scripts/cards/.env.local
+- Redacted R2 details in tracked docs/scripts:
+  - README.md + scripts/update-readme-r2.sh now use placeholders:
+    - CF_R2_PUBLIC_BASE="https://<your-public-r2-base>"
+    - CF_R2_ENDPOINT="https://<your-r2-endpoint>"
+    - R2_BUCKET="<your-bucket>"
+- Redacted DB example credentials:
+  - .env.example DATABASE_URL now uses placeholders (<user>:<password>)
+- Safe shell pattern noted (avoid interactive / broken quoting): prefer writing to files (or single-quoted heredocs) and then executing.
+- Commits: f224578..6274013
