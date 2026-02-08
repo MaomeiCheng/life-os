@@ -100,5 +100,5 @@ pnpm -s dev
 - [x] Security hardening (2026-02-08): env ignored + R2 URLs/bucket redacted + DB creds redacted + scans passed
 - [x] UI(cards): icon-only open button (commit: 34cb6be)
 - [x] Dev boot notes added to HANDOVER (commit: a3f70a7)
-- [x] Repo clean + pushed (HEAD: a3f70a7)
+- [x] Repo clean + pushed (HEAD: f09afb7)
 
