@@ -43,13 +43,13 @@ Notes:
 <!-- R2_WORKFLOW_START -->
 ### R2 (large mp4 upload + thumbnail)
 
-- Public base URL: https://pub-4ff6e284500a472e9913cb662e4384ca.r2.dev
-- S3 endpoint: https://95766963cde8c3ebf0481bfac54e1c3b.r2.cloudflarestorage.com
+- Public base URL: https://<your-public-r2-base>
+- S3 endpoint: https://<your-r2-endpoint>
 - Bucket: lifeos-cards
 - AWS profile: lifeos-r2
 
 Upload from Mac (batch example):
-aws --profile lifeos-r2 --endpoint-url https://95766963cde8c3ebf0481bfac54e1c3b.r2.cloudflarestorage.com s3 cp "/path/to/cards" "s3://lifeos-cards/cards/" --recursive --exclude "*" --include "*.mp4" --content-type "video/mp4"
+aws --profile lifeos-r2 --endpoint-url https://<your-r2-endpoint> s3 cp "/path/to/cards" "s3://<your-bucket>/cards/" --recursive --exclude "*" --include "*.mp4" --content-type "video/mp4"
 
 Bulk import cards into DB from R2 (Codespaces):
 cd apps/web
