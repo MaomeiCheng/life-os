@@ -95,3 +95,10 @@ cd /workspaces/life-os/apps/web || exit 1
 docker start lifeos-postgres >/dev/null 2>&1 || true
 pnpm -s dev
 # open: http://localhost:3000/ssot/music?tab=crownCards
+
+## DONE checklist (latest)
+- [x] Security hardening (2026-02-08): env ignored + R2 URLs/bucket redacted + DB creds redacted + scans passed
+- [x] UI(cards): icon-only open button (commit: 34cb6be)
+- [x] Dev boot notes added to HANDOVER (commit: a3f70a7)
+- [x] Repo clean + pushed (HEAD: a3f70a7)
+
