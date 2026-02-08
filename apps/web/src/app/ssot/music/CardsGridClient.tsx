@@ -111,7 +111,10 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
           >
             <div
               style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative", cursor: "pointer" }}
-              onClick={() => toggleActive(c.id)}
+              onClick={(e) => {
+                  e.preventDefault();
+                  if (c.videoSrc) window.open(c.videoSrc, `card_${Date.now()}_${Math.random().toString(36).slice(2)}`, "noopener,noreferrer");
+                }}
               onMouseEnter={() => {
                 setHoverId(c.id);
                 // if this card is the one with sound enabled, keep it unmuted on hover-back
@@ -136,6 +139,42 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   }}
                 />
               ) : null}
+
+                {c.videoSrc && !showVideo ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleActive(c.id);
+                    }}
+                    aria-label="Preview"
+                    style={{
+                      position: "absolute",
+                      left: "50%",
+                      top: "50%",
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 6,
+                      padding: "10px 14px",
+                      borderRadius: 999,
+                      border: "1px solid rgba(255,255,255,0.40)",
+                      background: "rgba(15, 23, 42, 0.55)",
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: 900,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      backdropFilter: "blur(6px)",
+                      WebkitBackdropFilter: "blur(6px)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span aria-hidden="true">▶</span>
+                    Preview
+                  </button>
+                ) : null}
+
 
               <button
                 type="button"
@@ -205,7 +244,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                 </div>
               </div>
 
-              <button
+              <button aria-label="Open"
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -216,16 +255,24 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                   fontSize: 12,
                   fontWeight: 900,
                   color: "#0F172A",
-                  textDecoration: "underline",
+                  textDecoration: "none",
                   whiteSpace: "nowrap",
                   background: "transparent",
                   border: "none",
                   padding: 0,
                   cursor: "pointer",
+                    width: 22,
+                    height: 22,
+                    display: "grid",
+                    placeItems: "center",
                 }}
               >
-                Open
-              </button>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <path d="M14 3h7v7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <path d="M10 14L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <path d="M21 14v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+</svg>
+                  </button>
             </div>
           </div>
         );
