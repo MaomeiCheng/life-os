@@ -61,3 +61,4 @@
 - Notes:
   - v2 picks candidates across the video including tail-biased points (often shows title/artist cards).
 
+  - Touch devices (iPad/mobile): CardsFeedClient supports tap-to-preview on the 16:9 media area (toggles active video).
