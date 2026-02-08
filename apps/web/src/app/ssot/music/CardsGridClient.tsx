@@ -243,7 +243,7 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                 </div>
               </div>
 
-              <button aria-label="Open"
+              <button aria-label="Open" title="Open"
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
