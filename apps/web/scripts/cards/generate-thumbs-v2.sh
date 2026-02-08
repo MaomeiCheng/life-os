@@ -69,8 +69,28 @@ pick_best_thumb() {
   local dur
   dur="$(get_duration "$src")"
   if [ -z "${dur:-}" ]; then dur="0"; fi
+  # duration-aware candidates: spread + tail (often shows title/artist)
+  # Note: when duration unknown (dur=0), we fall back to the old fixed seconds list.
+  local candidates=()
+  if awk "BEGIN{exit !(${dur} > 0)}"; then
+    # spread points (percent-based)
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.10}")")
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.25}")")
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.40}")")
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.55}")")
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.70}")")
+    candidates+=("$(awk "BEGIN{printf \"%.3f\", ${dur}*0.85}")")
+    # tail points (prefer end cards)
+    candidates+=("$(awk "BEGIN{t=${dur}-180; if(t<1)t=1; printf \"%.3f\", t}")")
+    candidates+=("$(awk "BEGIN{t=${dur}-120; if(t<1)t=1; printf \"%.3f\", t}")")
+    candidates+=("$(awk "BEGIN{t=${dur}-60;  if(t<1)t=1; printf \"%.3f\", t}")")
+    candidates+=("$(awk "BEGIN{t=${dur}-30;  if(t<1)t=1; printf \"%.3f\", t}")")
+    candidates+=("$(awk "BEGIN{t=${dur}-10;  if(t<1)t=1; printf \"%.3f\", t}")")
+    candidates+=("$(awk "BEGIN{t=${dur}-5;   if(t<1)t=1; printf \"%.3f\", t}")")
+  else
+    candidates=("0.8" "1.2" "1.8" "2.6" "3.6" "4.8" "6.2")
+  fi
 
-  local candidates=("0.8" "1.2" "1.8" "2.6" "3.6" "4.8" "6.2")
   local best_y="0"
   local best_path=""
 
