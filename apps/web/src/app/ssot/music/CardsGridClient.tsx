@@ -171,7 +171,6 @@ export function CardsGridClient({ rows }: { rows: CardRowClient[] }) {
                     }}
                   >
                     <span aria-hidden="true">▶</span>
-                    Preview
                   </button>
                 ) : null}
 
