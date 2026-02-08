@@ -53,9 +53,9 @@ aws --profile lifeos-r2 --endpoint-url https://95766963cde8c3ebf0481bfac54e1c3b.
 
 Bulk import cards into DB from R2 (Codespaces):
 cd apps/web
-export CF_R2_PUBLIC_BASE="https://pub-4ff6e284500a472e9913cb662e4384ca.r2.dev"
-export CF_R2_ENDPOINT="https://95766963cde8c3ebf0481bfac54e1c3b.r2.cloudflarestorage.com"
-export R2_BUCKET="lifeos-cards"
+export CF_R2_PUBLIC_BASE="https://<your-public-r2-base>"
+export CF_R2_ENDPOINT="https://<your-r2-endpoint>"
+export R2_BUCKET="<your-bucket>"
 export AWS_PROFILE="lifeos-r2"
 ./scripts/cards/import-from-r2.sh
 
