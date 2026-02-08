@@ -33,3 +33,9 @@
 - Read: docs/ops-chat-handover.md (Start/Stop + paste safety)
 - Start DB if needed: `docker start lifeos-postgres >/dev/null 2>&1 || true`
 - Start Web if needed: `cd apps/web && pnpm -s dev`
+
+## 變更紀錄（最近）
+- `86a968f` docs(security): redact R2 URLs in README + update script
+- `486a64e` docs(security): redact R2 endpoints in README
+- `f224578` chore(security): ignore env files + fix thumbs entrypoint
+- `b60911e` docs(handover): note reason->note rename plan for music remarks
