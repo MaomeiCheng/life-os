@@ -75,3 +75,8 @@ Commits (main):
 - 749ab70 docs(handover): note safe shell quoting pattern
 - 6274013 docs(security): redact example DB credentials
 - 5c5d6b1 docs(handover): record 2026-02-08 security hardening
+
+## 2026-02-08 (Late note)
+- Time: 23:42 Asia/Taipei (Sunday); approaching Monday.
+- Status: security hardening + placeholder scans completed; no non-placeholder CF_R2_* / R2_BUCKET found in tracked files.
+- Note: If past midnight, follow nightly wrap-up checklist (stop web/DB, git status, update HANDOVER with progress/TODO, note next-start commands).
