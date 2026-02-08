@@ -3,6 +3,9 @@
 > 每次開新對話/交接：先看這份，再按順序看必讀文件。
 
 ## 目前狀態（SSOT）
+### TODO（命名/資料語意）
+- Music items/pending 的「備註」目前 DB/API 欄位名仍為 `reason`（UI 顯示為備註）。正式資料庫/對外 schema 時建議 rename 為 `note`/`remark`（並規劃 migration + API 路徑/欄位相容）。
+
 - Repo root: /workspaces/life-os
 - Web app: /workspaces/life-os/apps/web
 - ORM/DB: Prisma + Postgres
