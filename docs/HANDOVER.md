@@ -39,3 +39,8 @@
 - `486a64e` docs(security): redact R2 endpoints in README
 - `f224578` chore(security): ignore env files + fix thumbs entrypoint
 - `b60911e` docs(handover): note reason->note rename plan for music remarks
+
+## Shell 安全寫法（避免引號/ heredoc 在 CI / bash -lc 被截斷）
+- 不要在 `bash -lc '...'` 裡面塞多層引號或 heredoc；容易被 shell 提前結束，導致「跳進互動/語法錯誤」。
+- 建議做法：先把腳本/程式寫入檔案（`cat > file <<'EOF' ... EOF`），再 `bash file` 或 `python3 file.py` 執行。
+- 一律使用 `set -euo pipefail`，並在需要的地方加上 `|| true` 或明確的錯誤處理，避免半途中斷造成不一致狀態。
