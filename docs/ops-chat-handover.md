@@ -62,3 +62,14 @@
   - v2 picks candidates across the video including tail-biased points (often shows title/artist cards).
 
   - Touch devices (iPad/mobile): CardsFeedClient supports tap-to-preview on the 16:9 media area (toggles active video).
+
+### Cards preview UX (grid/feed)
+- Desktop:
+  - Grid: hover shows inline preview; click media opens video in new tab.
+  - Feed: inline preview auto-attaches video around viewport; Open icon opens video.
+- Touch devices (iPad/mobile):
+  - Feed: tap the 16:9 media area toggles preview (active video).
+  - Center preview button is icon-only (▶) with softened opacity.
+- Open button:
+  - Icon-only; has aria-label="Open" and title="Open" for tooltip on desktop.
+
