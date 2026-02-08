@@ -4,3 +4,7 @@ backend/modules/
 frontend/.env.local
 frontend/node_modules/
 dev-up.sh
+apps/web/.env
+apps/web/.env.local
+apps/web/scripts/cards/.env.local
+*.env.local
