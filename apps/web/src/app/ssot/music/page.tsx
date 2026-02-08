@@ -351,7 +351,7 @@ const cardsFiltered = q
 
             <form suppressHydrationWarning method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <input type="hidden" name="tab" value={tab} />
-              <input
+              <input suppressHydrationWarning
                 name="q"
                 defaultValue={q}
                 placeholder="Search…"
