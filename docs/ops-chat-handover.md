@@ -73,3 +73,19 @@
 - Open button:
   - Icon-only; has aria-label="Open" and title="Open" for tooltip on desktop.
 
+### Thumbnail selection strategy (current vs. future)
+- Current (v2 script): sample multiple timestamps across video with tail-biased points; pick the frame with higher average brightness (YAVG).
+- Why not always “last minutes”:
+  - Many videos end on fades/black/credits; best frame can be mid-video.
+- How TikTok/short-video apps do it (typical):
+  - Generate a set of candidate frames.
+  - Run lightweight CV/ML scoring to pick best: sharpness, faces/text presence, contrast, motion blur, saliency; sometimes OCR for title/artist text.
+  - Optionally personalize by engagement signals (what users tend to tap).
+- Costs (what you pay for):
+  - Compute: decoding/sampling frames (ffmpeg/GPU), running CV/ML/OCR models.
+  - Storage/egress: storing thumbs, serving images/videos.
+  - Engineering/ops: pipelines, retries, monitoring, moderation if needed.
+- Next upgrade options:
+  - Add heuristics: avoid near-black frames; prefer frames with edges/detail (sharpness).
+  - Optional OCR pass on a few tail frames to detect song title overlay, fallback if found.
+
