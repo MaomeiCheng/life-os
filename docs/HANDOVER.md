@@ -25,3 +25,8 @@
 - repo 名稱/連結
 - 最新 commit
 - 單一里程碑（你現在要做的下一件事）
+
+## First actions (every new session)
+- Read: docs/ops-chat-handover.md (Start/Stop + paste safety)
+- Start DB if needed: `docker start lifeos-postgres >/dev/null 2>&1 || true`
+- Start Web if needed: `cd apps/web && pnpm -s dev`
