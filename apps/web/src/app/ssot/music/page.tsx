@@ -303,7 +303,17 @@ const cardsFiltered = q
   ] as const;
 
   const rowsCount =
-    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : tab === "pending" ? pendingView.length : tab === "cards" ? (crownCardsView.length + templateCardsView.length) : audit.length;
+    tab === "events"
+      ? eventsView.length
+      : tab === "items"
+        ? itemsView.length
+        : tab === "pending"
+          ? pendingView.length
+          : tab === "crownCards"
+            ? crownCardsView.length
+            : tab === "templateCards"
+              ? templateCardsView.length
+              : audit.length;
 
   return (
     <main
