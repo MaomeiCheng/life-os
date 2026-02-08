@@ -86,3 +86,12 @@ Commits (main):
 - Dev server initially hit Prisma ECONNREFUSED (DB not reachable); resolved by starting `lifeos-postgres`.
 - Verified `/ssot/music` renders normally after DB up.
 - Commit: 34cb6be ui(cards): icon-only open button
+
+
+## Next start (dev)
+```bash
+# in Codespaces
+cd /workspaces/life-os/apps/web || exit 1
+docker start lifeos-postgres >/dev/null 2>&1 || true
+pnpm -s dev
+# open: http://localhost:3000/ssot/music?tab=crownCards
