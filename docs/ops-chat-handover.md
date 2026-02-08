@@ -45,3 +45,19 @@
 ### Quick DB sanity
 - Cards thumb stats:
   - `docker exec lifeos-postgres psql -U postgres -d lifeos -c "select count(*) as total, count(*) filter (where coalesce(\"thumbKey\",'')<>'' or coalesce(\"thumbUrl\",'')<>'') as with_thumb, count(*) filter (where coalesce(\"thumbKey\",'')='' and coalesce(\"thumbUrl\",'')='') as no_thumb from \"MusicCard\";"`
+
+### Cards thumbnails (R2 + DB)
+- Local env (not committed): `apps/web/scripts/cards/.env.local` (gitignored)
+- Load env into current shell (IMPORTANT: use dot/source):
+  - `cd /workspaces/life-os/apps/web`
+  - `. scripts/cards/load-env.sh`
+- Generate / regenerate thumbnails:
+  - Dry small batch (force + limit 3):
+    - `FORCE=1 LIMIT=3 ./scripts/cards/generate-thumbs-v2.sh`
+  - Full regenerate (force all):
+    - `FORCE=1 ./scripts/cards/generate-thumbs-v2.sh`
+  - Only fill missing thumbs:
+    - `./scripts/cards/generate-thumbs-v2.sh`
+- Notes:
+  - v2 picks candidates across the video including tail-biased points (often shows title/artist cards).
+
