@@ -349,7 +349,7 @@ const cardsFiltered = q
               </div>
             </div>
 
-            <form method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <form suppressHydrationWarning method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <input type="hidden" name="tab" value={tab} />
               <input
                 name="q"
