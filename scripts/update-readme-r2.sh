@@ -21,7 +21,7 @@ Generate thumbnail in Codespaces (requires: ffmpeg + awscli + DB running):
 docker start lifeos-postgres >/dev/null 2>&1 || true
 CF_R2_PUBLIC_BASE="https://<your-public-r2-base>"
 CF_R2_ENDPOINT="https://<your-r2-endpoint>"
-R2_BUCKET="lifeos-cards"
+R2_BUCKET="<your-bucket>"
 AWS_PROFILE="lifeos-r2"
 MP4_KEY="cards/93750_raw.mp4"
 JPG_KEY="cards/93750_raw.jpg"
