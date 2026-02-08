@@ -11,7 +11,7 @@ BLOCK=$(cat <<'MD'
 
 - Public base URL: https://<your-public-r2-base>
 - S3 endpoint: https://<your-r2-endpoint>
-- Bucket: lifeos-cards
+- Bucket: <your-bucket>
 - AWS profile: lifeos-r2
 
 Upload from Mac (example):
