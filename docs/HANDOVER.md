@@ -57,3 +57,21 @@
   - .env.example DATABASE_URL now uses placeholders (<user>:<password>)
 - Safe shell pattern noted (avoid interactive / broken quoting): prefer writing to files (or single-quoted heredocs) and then executing.
 - Commits: f224578..6274013
+
+## 2026-02-08 (Security hardening)
+- Ignored env files to prevent accidental commits:
+  - apps/web/.env, apps/web/.env.local, apps/web/scripts/cards/.env.local
+- Untracked any previously-tracked env files (git rm --cached) and verified ignore rules apply.
+- Redacted Cloudflare R2 public base / endpoint / bucket name from README + scripts/update-readme-r2.sh (placeholders kept).
+- Redacted example DB creds in .env.example (placeholders kept).
+- Updated scripts/cards/generate-thumbs.sh entrypoint fixes.
+Commits (main):
+- f224578 chore(security): ignore env files + fix thumbs entrypoint
+- 486a64e docs(security): redact R2 endpoints in README
+- 86a968f docs(security): redact R2 URLs in README + update script
+- 546e10c docs(handover): record recent security + scripts changes
+- 2e7b82e docs(security): redact R2 bucket name in docs/scripts
+- d456622 docs(security): redact R2 bucket name in update-readme script
+- 749ab70 docs(handover): note safe shell quoting pattern
+- 6274013 docs(security): redact example DB credentials
+- 5c5d6b1 docs(handover): record 2026-02-08 security hardening
