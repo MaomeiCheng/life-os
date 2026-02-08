@@ -80,3 +80,9 @@ Commits (main):
 - Time: 23:42 Asia/Taipei (Sunday); approaching Monday.
 - Status: security hardening + placeholder scans completed; no non-placeholder CF_R2_* / R2_BUCKET found in tracked files.
 - Note: If past midnight, follow nightly wrap-up checklist (stop web/DB, git status, update HANDOVER with progress/TODO, note next-start commands).
+
+## 2026-02-08 (Late UI + DB)
+- Fixed UI: icon-only open button for cards.
+- Dev server initially hit Prisma ECONNREFUSED (DB not reachable); resolved by starting `lifeos-postgres`.
+- Verified `/ssot/music` renders normally after DB up.
+- Commit: 34cb6be ui(cards): icon-only open button
