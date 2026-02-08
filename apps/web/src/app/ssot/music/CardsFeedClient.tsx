@@ -216,7 +216,7 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
                 boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
               }}
             >
-              <div style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative" }}>
+              <div style={{ aspectRatio: "16 / 9", background: "#0F172A", position: "relative", cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveId(prev => prev === c.id ? null : c.id); }}>
                 {c.thumbSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
