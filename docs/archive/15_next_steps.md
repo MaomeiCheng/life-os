@@ -1,3 +1,5 @@
+<!-- ARCHIVED: replaced by docs/next-steps.md; keep for history. -->
+
 # Next Steps (DEFAULT v1)
 
 ## Current State (locked)

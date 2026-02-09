@@ -18,8 +18,11 @@
 
 ## 交接必讀（依序）
 1. README.md
-2. docs/ops-chat-handover.md
-3. apps/web/README.md（若不存在就用：apps/web/package.json + apps/web/prisma/schema.prisma + apps/web/src/lib/db.ts 代替）
+2. docs/README.md（docs 入口索引/SSOT）
+3. docs/ops-chat-handover.md
+4. docs/cards-workflow.md
+5. docs/next-steps.md
+6. apps/web/README.md（若不存在就用：apps/web/package.json + apps/web/prisma/schema.prisma + apps/web/src/lib/db.ts 代替）
 
 ## 目前里程碑（單一）
 - 自動從影片挑封面/縮圖（產生更可辨識的 thumb）

@@ -8,3 +8,7 @@ apps/web/.env
 apps/web/.env.local
 apps/web/scripts/cards/.env.local
 *.env.local
+
+# local audit exports
+_docs_audit_*.txt
+_handover_audit_*.txt
