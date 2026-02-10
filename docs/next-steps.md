@@ -6,6 +6,20 @@ When we intentionally switch to a new chat, the first message must include:
 
 # Next Steps (life-os)
 
+## Milestone (single)
+- [ ] Auth: enforce `/ssot/*` requires login (verify edge + callbackUrl + logout flow)
+  - [ ] Verify: unauth -> /login?callbackUrl=...
+  - [ ] Verify: login success -> callbackUrl works (codespace domain)
+  - [ ] Verify: logout -> protected routes redirect to login
+  - [ ] Verify: NEXTAUTH_URL handling for Codespaces + local
+
+## Auth / Login (follow-ups)
+- [ ] Docs: record auth setup + admin creation script usage (safe patterns; never commit creds)
+  - [ ] `apps/web/scripts/auth/create-admin.mjs` usage
+  - [ ] required env: NEXTAUTH_SECRET, NEXTAUTH_URL, AUTH_CREATE_ADMIN_ENABLED
+- [ ] Hardening: ensure `create-admin.mjs` refuses production + requires explicit enable gate
+- [ ] Optional: add logout button somewhere (e.g. ssot/music header)
+
 ## Music / Crown Cards
 - [ ] Cards: store keys (videoKey/thumbKey) instead of full URLs
 - [ ] Cards: derive URLs from PUBLIC_R2_BASE_URL
@@ -26,4 +40,4 @@ When we intentionally switch to a new chat, the first message must include:
 ## Deploy (any device)
 - [ ] Move Postgres to Neon/Supabase
 - [ ] Deploy Next.js to Cloudflare Pages or Vercel
-- [ ] Set env vars: DATABASE_URL, PUBLIC_R2_BASE_URL, etc.
+- [ ] Set env vars: DATABASE_URL, PUBLIC_R2_BASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL
