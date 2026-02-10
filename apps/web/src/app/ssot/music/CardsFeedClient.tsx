@@ -18,18 +18,6 @@ export function CardsFeedClient({ rows }: { rows: CardRowClient[] }) {
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [soundId, setSoundId] = React.useState<string | null>(null);
   const [range, setRange] = React.useState<Range>({ start: 0, end: 10 });
-
-  function stop(id: string) {
-    const v = videoRefs.current[id];
-    if (!v) return;
-    try {
-      v.pause();
-      v.currentTime = 0;
-      v.muted = true;
-    } catch {}
-    setSoundId((prev) => (prev === id ? null : prev));
-  }
-
   function stopAllExcept(keepId: string) {
     for (const [id, v] of Object.entries(videoRefs.current)) {
       if (!v) continue;
