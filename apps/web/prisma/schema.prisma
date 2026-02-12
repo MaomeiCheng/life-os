@@ -17,7 +17,10 @@ model MusicEvent {
   updatedAt    DateTime @updatedAt
 
   items        MusicCrownItem[]
+
+  @@map("MusicEvent")
 }
+
 
 model MusicCrownItem {
   timelineIndex    Int      @id
@@ -31,7 +34,10 @@ model MusicCrownItem {
   updatedAt        DateTime @updatedAt
 
   event MusicEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  @@map("MusicCrownItem")
 }
+
 
 model MusicPending {
   pendingId String @id // pending_id (stable)

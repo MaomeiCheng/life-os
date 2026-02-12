@@ -2,8 +2,11 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const sp = useSearchParams();
+  const callbackUrl = sp.get("callbackUrl") || "/ssot/music?tab=crownCards";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +25,7 @@ export default function LoginPage() {
             email,
             password,
             redirect: true,
-            callbackUrl: "/ssot/music?tab=crownCards",
+            callbackUrl,
           });
           setLoading(false);
           if (res?.error) setError(res.error);
