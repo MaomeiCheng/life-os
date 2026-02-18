@@ -9,19 +9,29 @@
     "lint": "eslint",
     "ssot:validate": "node scripts/ssot-validate.mjs",
     "finance:validate": "node scripts/finance-validate.mjs",
-    "validate": "pnpm ssot:validate && pnpm finance:validate"
+    "validate": "pnpm ssot:validate && pnpm finance:validate",
+    "db:seed": "node prisma/seed.mjs"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "bcryptjs": "^3.0.3",
     "next": "16.1.6",
+    "next-auth": "5.0.0-beta.30",
+    "pg": "^8.18.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prisma": "^7.3.0",
     "typescript": "^5"
   }
 }

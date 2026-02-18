@@ -1,11 +1,61 @@
+import { getDb } from "@/lib/db";
+
 import fs from "node:fs";
 import path from "node:path";
 import Link from "next/link";
+import { PendingTableClient } from "./PendingTableClient";
+import { ItemsTableClient } from "./ItemsTableClient";
+import { CardsGridClient } from "./CardsGridClient";
+import { CardsFeedClient } from "./CardsFeedClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type AnyObj = Record<string, any>;
+type AnyObj = Record<string, unknown>;
+
+type AuditRow = {
+  id: string;
+  entityType: string;
+  entityId: string;
+  action: string;
+  createdAt: Date;
+};
+
+type PendingRow = {
+  pendingId: string;
+  tempCode: string;
+  title: string;
+  reason: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type CrownItemRow = {
+  timelineIndex: number;
+  eventId: string;
+  crownDate: string;
+  title: string;
+  cardReceivedDate: string;
+  note: string;
+  reason: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type CardRow = {
+  id: string;
+  timelineIndex: number | null;
+  pendingId: string | null;
+  title: string;
+  kind?: string;
+  videoUrl: string | null;
+  thumbUrl: string | null;
+  videoKey?: string | null;
+  thumbKey?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 
 function readJson(relPathFromWebRoot: string): AnyObj[] {
   const abs = path.resolve(process.cwd(), relPathFromWebRoot);
@@ -146,12 +196,69 @@ export default async function MusicSSOTPage({
 
   const ssotRel = process.env.SSOT_PATH || "../../ssot";
   const q = (sp.q || "").trim();
-  const tab = (sp.tab || "events").trim(); // events | items | pending
+  const tab = (sp.tab || "events").trim(); // events | items | pending | cards | audit
   const qn = q.toLowerCase();
 
+  const R2_BASE = (process.env.PUBLIC_R2_BASE_URL || "").replace(/\/$/, "");
+  function r2Url(key?: string | null, fallback?: string | null) {
+    const k = (key || "").trim();
+    if (k && R2_BASE) return `${R2_BASE}/${k.replace(/^\//, "")}`;
+    return (fallback || "").trim();
+  }
+
+
+
   const events = readJson(path.join(ssotRel, "data/music/music_events.json"));
-  const items = readJson(path.join(ssotRel, "data/music/music_crown_items.json"));
-  const pending = readJson(path.join(ssotRel, "data/music/music_pending_list.json"));
+  const db2 = getDb();
+  const items: CrownItemRow[] = await db2.musicCrownItem.findMany({
+    where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { note: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
+    orderBy: [{ timelineIndex: "asc" }],
+  });
+
+  const itemsFiltered = items;
+  const db = getDb();
+  const pending: PendingRow[] = await db.musicPending.findMany({
+    where: q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { tempCode: { contains: q, mode: "insensitive" } }, { reason: { contains: q, mode: "insensitive" } }] } : undefined,
+    orderBy: [{ tempCode: "asc" }],
+  });
+
+  const pendingFiltered = pending;
+
+  const audit: AuditRow[] = await db2.auditLog.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    take: 200,
+  });
+
+  const cards: CardRow[] = await db2.musicCard.findMany({
+    select: {
+      timelineIndex: true,
+      pendingId: true,
+      id: true,
+      title: true,
+      videoUrl: true,
+      thumbUrl: true,
+      videoKey: true,
+      thumbKey: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: [
+      { timelineIndex: "asc" },
+      { videoKey: "asc" },
+    ],
+  });
+const cardsFiltered = q
+    ? cards.filter(
+        (c) =>
+          normalize(c.title).includes(qn) ||
+          normalize(r2Url(c.videoKey, c.videoUrl) || c.videoKey).includes(qn) ||
+          normalize(r2Url(c.thumbKey, c.thumbUrl) || c.thumbKey).includes(qn)
+      )
+    : cards;
+
+  const crownCardsView = cardsFiltered.filter((c) => (c.kind || "crown") === "crown");
+  const templateCardsView = cardsFiltered.filter((c) => c.kind === "template");
+
 
   const lastEventDate = events
     .map((e) => e.event_date)
@@ -173,27 +280,40 @@ export default async function MusicSSOTPage({
     ? items.filter(
         (i) =>
           normalize(i.title).includes(qn) ||
-          normalize(i.event_id).includes(qn) ||
-          normalize(i.crown_date).includes(qn) ||
-          normalize(i.card_received_date).includes(qn) ||
+          normalize(i.eventId).includes(qn) ||
+          normalize(i.crownDate).includes(qn) ||
+          normalize(i.cardReceivedDate).includes(qn) ||
           normalize(i.note).includes(qn)
       )
     : items;
 
   const pendingView = q
     ? pending.filter(
-        (p) => normalize(p.temp_code).includes(qn) || normalize(p.title).includes(qn)
+        (p) => normalize(p.tempCode).includes(qn) || normalize(p.title).includes(qn)
       )
     : pending;
 
   const tabs = [
-    { key: "events", label: "Events", count: events.length },
-    { key: "items", label: "Crown Items", count: items.length },
-    { key: "pending", label: "Pending", count: pending.length },
+    { key: "events", label: "Events", count: eventsView.length },
+    { key: "items", label: "Crown Items", count: itemsView.length },
+    { key: "pending", label: "Pending", count: pendingView.length },
+    { key: "crownCards", label: "Crown Cards", count: crownCardsView.length },
+    { key: "templateCards", label: "Template Cards", count: templateCardsView.length },
+    { key: "audit", label: "Audit", count: audit.length },
   ] as const;
 
   const rowsCount =
-    tab === "events" ? eventsView.length : tab === "items" ? itemsView.length : pendingView.length;
+    tab === "events"
+      ? eventsView.length
+      : tab === "items"
+        ? itemsView.length
+        : tab === "pending"
+          ? pendingView.length
+          : tab === "crownCards"
+            ? crownCardsView.length
+            : tab === "templateCards"
+              ? templateCardsView.length
+              : audit.length;
 
   return (
     <main
@@ -230,7 +350,7 @@ export default async function MusicSSOTPage({
 
           <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div>
-              <h1 style={{ fontSize: 18, fontWeight: 1000 as any, margin: 0, color: "#0F172A" }}>
+              <h1 style={{ fontSize: 18, fontWeight: 1000, margin: 0, color: "#0F172A" }}>
                 Music
               </h1>
               <div style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>
@@ -239,9 +359,9 @@ export default async function MusicSSOTPage({
               </div>
             </div>
 
-            <form method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <form suppressHydrationWarning method="get" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <input type="hidden" name="tab" value={tab} />
-              <input
+              <input suppressHydrationWarning
                 name="q"
                 defaultValue={q}
                 placeholder="Search…"
@@ -327,29 +447,64 @@ export default async function MusicSSOTPage({
             />
           ) : null}
 
-          {tab === "items" ? (
-            <Table
-              columns={[
-                { key: "timeline_index", label: "#", width: "70px" },
-                { key: "event_id", label: "Event ID", width: "90px" },
-                { key: "crown_date", label: "Crown date", width: "120px" },
-                { key: "title", label: "Title" },
-                { key: "card_received_date", label: "Card received", width: "130px" },
-                { key: "reason", label: "Reason" },
-                { key: "note", label: "Note" },
-              ]}
-              rows={itemsView}
-            />
+          {tab === "items" ? (<ItemsTableClient rows={itemsFiltered} />) : null}
+
+          {tab === "pending" ? (<PendingTableClient rows={pendingFiltered} />) : null}
+
+          {tab === "crownCards" ? (
+            <>
+              <style>{`
+                /* desktop: grid, mobile: feed */
+                .cardsDesktop { display: none; }
+                .cardsMobile { display: block; }
+                @media (min-width: 1024px) {
+                  .cardsDesktop { display: block; }
+                  .cardsMobile { display: none; }
+                }
+              `}</style>
+
+              <div className="cardsDesktop">
+                <CardsGridClient
+                  rows={crownCardsView.map((c) => ({
+                id: c.id,
+                title: c.title,
+                timelineIndex: c.timelineIndex ?? null,
+                pendingId: c.pendingId ?? null,
+                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+              }))}
+                />
+              </div>
+
+              <div className="cardsMobile">
+                <CardsFeedClient
+                  rows={crownCardsView.map((c) => ({
+                id: c.id,
+                title: c.title,
+                timelineIndex: c.timelineIndex ?? null,
+                pendingId: c.pendingId ?? null,
+                videoSrc: r2Url(c.videoKey, c.videoUrl) || "",
+                thumbSrc: r2Url(c.thumbKey, c.thumbUrl) || "",
+              }))}
+                />
+              </div>
+            </>
           ) : null}
 
-          {tab === "pending" ? (
+          {tab === "audit" ? (
             <Table
               columns={[
-                { key: "temp_code", label: "Code", width: "90px" },
-                { key: "title", label: "Title" },
-                { key: "reason", label: "Reason" },
+                { key: "createdAt", label: "Time", width: "180px" },
+                { key: "entityType", label: "Entity", width: "140px" },
+                { key: "entityId", label: "Entity ID", width: "220px" },
+                { key: "action", label: "Action", width: "140px" },
               ]}
-              rows={pendingView}
+              rows={audit.map((a) => ({
+                createdAt: new Date(a.createdAt).toISOString(),
+                entityType: a.entityType,
+                entityId: a.entityId,
+                action: a.action,
+              }))}
             />
           ) : null}
         </section>

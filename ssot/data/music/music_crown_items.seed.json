@@ -1,0 +1,155 @@
+[
+  {
+    "timeline_index": 1,
+    "event_id": "E01",
+    "crown_date": "2025-10-09",
+    "title": "妹子",
+    "card_received_date": "2025-10-09",
+    "note": "首張冠歌卡",
+    "reason": "test"
+  },
+  {
+    "timeline_index": 2,
+    "event_id": "E02",
+    "crown_date": "2026-01-01",
+    "title": "P.S. 我愛你",
+    "card_received_date": "2026-01-03",
+    "note": "同日三首｜第二個收到",
+    "reason": "test"
+  },
+  {
+    "timeline_index": 3,
+    "event_id": "E02",
+    "crown_date": "2026-01-01",
+    "title": "如一",
+    "card_received_date": "2026-01-07",
+    "note": "同日三首｜最後收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 4,
+    "event_id": "E02",
+    "crown_date": "2026-01-01",
+    "title": "再見愛人",
+    "card_received_date": "2026-01-03",
+    "note": "同日三首｜第一個收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 5,
+    "event_id": "E03",
+    "crown_date": "2026-01-02",
+    "title": "一生的愛",
+    "card_received_date": "2026-01-07",
+    "note": "",
+    "reason": ""
+  },
+  {
+    "timeline_index": 6,
+    "event_id": "E04",
+    "crown_date": "2026-01-09",
+    "title": "星河水手",
+    "card_received_date": "2026-01-10",
+    "note": "",
+    "reason": ""
+  },
+  {
+    "timeline_index": 7,
+    "event_id": "E05",
+    "crown_date": "2026-01-14",
+    "title": "始於心動終於白首",
+    "card_received_date": "2026-01-15",
+    "note": "",
+    "reason": ""
+  },
+  {
+    "timeline_index": 8,
+    "event_id": "E06",
+    "crown_date": "2026-01-15",
+    "title": "銀河愛情故事",
+    "card_received_date": "2026-01-15",
+    "note": "",
+    "reason": ""
+  },
+  {
+    "timeline_index": 9,
+    "event_id": "E07",
+    "crown_date": "2026-01-17",
+    "title": "唯一的偏愛",
+    "card_received_date": "2026-01-19",
+    "note": "",
+    "reason": ""
+  },
+  {
+    "timeline_index": 10,
+    "event_id": "E08",
+    "crown_date": "2026-01-24",
+    "title": "天空之外",
+    "card_received_date": "2026-01-27",
+    "note": "冠歌卡已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 11,
+    "event_id": "E09",
+    "crown_date": "2026-01-26",
+    "title": "千年",
+    "card_received_date": "2026-02-01",
+    "note": "1/26 第 1 首｜冠歌卡 2/1 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 12,
+    "event_id": "E09",
+    "crown_date": "2026-01-26",
+    "title": "北緯23度26分",
+    "card_received_date": "2026-01-29",
+    "note": "1/26 第 2 首｜冠歌卡 1/29 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 13,
+    "event_id": "E09",
+    "crown_date": "2026-01-26",
+    "title": "有我呢",
+    "card_received_date": "2026-02-01",
+    "note": "1/26 第 3 首｜冠歌卡 2/1 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 14,
+    "event_id": "E09",
+    "crown_date": "2026-01-26",
+    "title": "永不失聯的愛",
+    "card_received_date": "2026-02-03",
+    "note": "1/26 第 4 首｜冠歌卡 2/3 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 15,
+    "event_id": "E10",
+    "crown_date": "2026-01-27",
+    "title": "太陽與地球",
+    "card_received_date": "2026-02-03",
+    "note": "1/27 第 1 首｜冠歌卡 2/3 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 16,
+    "event_id": "E11",
+    "crown_date": "2026-01-28",
+    "title": "畫圈",
+    "card_received_date": "2026-02-03",
+    "note": "1/28 第 1 首｜冠歌卡 2/3 已收到",
+    "reason": ""
+  },
+  {
+    "timeline_index": 17,
+    "event_id": "E12",
+    "crown_date": "2026-01-29",
+    "title": "化身孤島的鯨",
+    "card_received_date": "2026-02-03",
+    "note": "第17首：因為這是我第一次聽這位歌手唱的歌，所以特別選來記錄。",
+    "reason": ""
+  }
+]
