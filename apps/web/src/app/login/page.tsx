@@ -21,14 +21,28 @@ export default function LoginPage() {
           e.preventDefault();
           setLoading(true);
           setError(null);
+
           const res = await signIn("credentials", {
             email,
             password,
-            redirect: true,
+            redirect: false,
             callbackUrl,
           });
+
           setLoading(false);
-          if (res?.error) setError(res.error);
+
+          // res can be: undefined | { error?: string | null; ok?: boolean; status?: number; url?: string | null }
+          if (res && "error" in res && res.error) {
+            setError(String(res.error));
+            return;
+          }
+
+          const url =
+            res && "url" in res && typeof res.url === "string" && res.url
+              ? res.url
+              : callbackUrl;
+
+          window.location.href = url;
         }}
       >
         <label style={{ display: "block", marginBottom: 8 }}>
@@ -65,9 +79,7 @@ export default function LoginPage() {
           />
         </label>
 
-        {error ? (
-          <p style={{ color: "crimson", marginBottom: 10 }}>{error}</p>
-        ) : null}
+        {error ? <p style={{ color: "crimson", marginBottom: 10 }}>{error}</p> : null}
 
         <button
           type="submit"
