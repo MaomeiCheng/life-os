@@ -12,3 +12,11 @@ apps/web/scripts/cards/.env.local
 # local audit exports
 _docs_audit_*.txt
 _handover_audit_*.txt
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+.next
+**/.next
