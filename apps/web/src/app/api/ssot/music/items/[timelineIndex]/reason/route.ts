@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { getDb } from "@/lib/db";
 
 export async function PATCH(req: Request, ctx: { params: Promise<{ timelineIndex: string }> }) {
@@ -22,7 +21,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ timelineIndex
     return NextResponse.json({ ok: false, error: "not found" }, { status: 404 });
   }
 
-  const updated = await db.$transaction(async (tx: Prisma.TransactionClient) => {
+  const updated = await db.$transaction(async (tx: any) => {
     const item = await tx.musicCrownItem.update({
       where: { timelineIndex: idx },
       data: { reason },

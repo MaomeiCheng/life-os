@@ -1,33 +1,26 @@
-import pkg from "@prisma/client";
-import type { PrismaClient as PrismaClientType } from "@prisma/client";
-const { PrismaClient } = pkg;
-
+import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is missing");
+declare global {
+  // eslint-disable-next-line no-var
+  var __lifeos_prisma: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var __lifeos_pg_pool: Pool | undefined;
 }
 
-const globalForPrisma = globalThis as unknown as {
-  __lifeos_prisma?: PrismaClientType;
-  __lifeos_pg_pool?: Pool;
-};
-
-export function getDb() {
-  if (process.env.NODE_ENV !== "production") {
-    if (!globalForPrisma.__lifeos_pg_pool) {
-      globalForPrisma.__lifeos_pg_pool = new Pool({ connectionString });
-    }
-    if (!globalForPrisma.__lifeos_prisma) {
-      const adapter = new PrismaPg(globalForPrisma.__lifeos_pg_pool);
-      globalForPrisma.__lifeos_prisma = new PrismaClient({ adapter });
-    }
-    return globalForPrisma.__lifeos_prisma;
+function makeDb() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is required");
   }
 
-  const pool = new Pool({ connectionString });
+  const pool = (globalThis.__lifeos_pg_pool ??= new Pool({ connectionString }));
   const adapter = new PrismaPg(pool);
+
   return new PrismaClient({ adapter });
+}
+
+export function getDb() {
+  return (globalThis.__lifeos_prisma ??= makeDb());
 }
