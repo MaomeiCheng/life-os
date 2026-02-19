@@ -2,6 +2,18 @@
 
 > 每次開新對話/交接：先看這份，再按順序看必讀文件。
 
+## 2026-02-19 Vercel 部署修復收尾
+
+- DONE：`.gitignore` 忽略 `.env*` 與 `.next`，並確認兩者不在 git index（commit `4f8aaac`）。
+- DONE：新增 Vercel deploy 文件 `docs/vercel/README.md`（commit `e872a82`）。
+- DONE：新增部署腳本 `scripts/vercel/deploy-web.sh`（commit `2096e2c`）。
+- DONE：本機 `pnpm build` 可過（login + prisma import + DATABASE_URL local 設定），rebase 解衝突後已推上（commit `2033be4`）。
+- ISSUE：Vercel 遠端 build 失敗：pnpm 安裝時顯示「Ignored build scripts」→ Prisma Client 未生成，遠端錯誤 `@prisma/client` 沒有 `PrismaClient` export（log 已抓到）。
+- FIX：`apps/web/package.json` build 改為 `prisma generate && next build`；並在 `apps/web/pnpm-workspace.yaml` 設 `onlyBuiltDependencies` 允許 prisma 相關 build scripts（commit `aca274f`）。
+- ISSUE（已修）：`pnpm-workspace.yaml` 一度縮排錯誤導致 `bad indentation`；已修正（工作區乾淨）。
+- NEXT：明天重跑 `cd "$HOME/Projects/life-os/apps/web" && ./scripts/vercel/deploy-web.sh`；若失敗，用 `vercel logs --follow` 看遠端 build log（不要加 `--since`）。
+
+
 ## 目前狀態（SSOT）
 
 ### TODO（命名/資料語意）
