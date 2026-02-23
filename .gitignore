@@ -20,3 +20,14 @@ _handover_audit_*.txt
 !**/.env.example
 .next
 **/.next
+
+# macOS
+.DS_Store
+
+# local secrets / env
+**/.secrets.*
+**/env.txt
+
+# local auth / debug artifacts
+apps/web/.cookies.txt
+apps/web/scripts/tmp/

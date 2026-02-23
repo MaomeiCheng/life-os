@@ -2,6 +2,35 @@
 
 > 每次開新對話/交接：先看這份，再按順序看必讀文件。
 
+## 2026-02-24 Deploy: Fix Credentials login on Vercel (CredentialsSignin / no redirect)
+
+### Symptom
+- Production login redirects to `/login?error=CredentialsSignin&code=credentials`
+- Local scripts sometimes showed Prisma P1001 "Can't reach database server at base" (local env mismatch)
+
+### Root cause
+- Production was correctly using Neon `DATABASE_URL` (verified via Vercel runtime logs printing dbHost).
+- `CredentialsSignin` was caused by `authorize()` returning `null` due to password verification failure.
+- The target user existed in Neon, but `passwordHash` was not a valid bcrypt hash (placeholder/incorrect value). `bcryptjs.compare()` therefore always failed.
+
+### What we verified
+- Vercel production runtime logs confirmed:
+  - `DATABASE_URL` present
+  - `dbHasBase: false`
+  - `dbHost: ep-bold-snow-a1m9pkxe-pooler.ap-southeast-1.aws.neon.tech`
+  - `NEXTAUTH_URL: https://web-nine-beta-32.vercel.app`
+
+### Fix applied
+1) Generate a new bcrypt hash locally (bcryptjs), then update Neon user passwordHash via Prisma CLI + SQL.
+2) Verify credentials login via curl (cookie jar + csrf) returns `302 location: /` and sets `__Secure-authjs.session-token`.
+
+SQL executed (example):
+```sql
+update "User"
+set "passwordHash" = '<bcrypt_hash>',
+    "updatedAt" = now()
+where lower("email") = 'maomei0905@gmail.com';
+
 ## 2026-02-19 Vercel 部署修復收尾
 
 - DONE：`.gitignore` 忽略 `.env*` 與 `.next`，並確認兩者不在 git index（commit `4f8aaac`）。
