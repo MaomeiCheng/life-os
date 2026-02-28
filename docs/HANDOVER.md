@@ -2,6 +2,33 @@
 
 > 每次開新對話/交接：先看這份，再按順序看必讀文件。
 
+# End-of-session wrap (2026-02-24 Asia/Taipei)
+
+## DONE
+- Fixed Vercel Production Credentials login (CredentialsSignin)
+  - Root cause: user passwordHash not valid bcrypt -> compare failed
+  - Reset passwordHash in Neon via prisma db execute
+  - Verified curl login 302 -> /
+- Removed temporary auth debug logs from apps/web/src/auth.ts
+- Updated docs/HANDOVER.md with incident write-up
+- Added .gitignore entries to prevent committing local secrets/artifacts (.secrets.*, env.txt, .cookies.txt, scripts/tmp, .DS_Store)
+- Deployed production; alias updated: https://web-nine-beta-32.vercel.app
+- Pushed to GitHub: main @ d45fabd
+
+## NEXT TODO (suggested)
+- Script/freeze: add `scripts/admin/reset-password` (safe password reset workflow)
+- Seed hardening: ensure admin user has valid bcrypt hash (no placeholders)
+- Add doc note: `vercel logs` needs `--no-branch` when it shows “No logs found ... on branch main”
+
+## Next start commands
+- cd /Users/joanna/Projects/life-os
+- git pull
+- cd apps/web
+- pnpm dev (or vercel deploy --prod as needed)
+
+## Security reminder
+- Never commit `.secrets.*` or env dumps; rotate keys if exposed.
+
 ## 2026-02-24 Deploy: Fix Credentials login on Vercel (CredentialsSignin / no redirect)
 
 ### Symptom
@@ -30,6 +57,7 @@ update "User"
 set "passwordHash" = '<bcrypt_hash>',
     "updatedAt" = now()
 where lower("email") = 'maomei0905@gmail.com';
+```
 
 ## 2026-02-19 Vercel 部署修復收尾
 
