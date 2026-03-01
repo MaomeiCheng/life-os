@@ -31,3 +31,5 @@ _handover_audit_*.txt
 # local auth / debug artifacts
 apps/web/.cookies.txt
 apps/web/scripts/tmp/
+
+apps/web/.vscode/
