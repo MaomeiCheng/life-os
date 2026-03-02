@@ -203,3 +203,21 @@ pnpm -s dev
 
 ## IP Assets (SSOT)
 - Index: apps/web/docs/ip/README.md
+
+## Daily Wrap-up (before 02:00, except Sun)
+### 1) Save & freeze artifacts
+- [ ] Export/Save any new IP assets to `apps/web/docs/ip/...` (final masters only)
+- [ ] Update specs if proportions/style changed (`apps/web/docs/ip/spec/*.md`)
+
+### 2) Repo hygiene
+- [ ] `git status` is clean
+- [ ] No secrets committed: `.env*`, API keys, R2 keys, `DATABASE_URL`, personal data
+- [ ] If any key was exposed, rotate it (URL-only is not security)
+
+### 3) Stop services (if running locally)
+- [ ] Stop dev server / watchers
+- [ ] Stop local DB / containers if started
+
+### 4) Handover notes (for next chat window)
+- [ ] Paste into new chat: repo link + latest commit + exactly one milestone
+- [ ] Record: what was DONE, what is NEXT, and file paths of key outputs
