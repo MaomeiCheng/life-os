@@ -33,3 +33,5 @@ apps/web/.cookies.txt
 apps/web/scripts/tmp/
 
 apps/web/.vscode/
+
+apps/web/docs/ip/joanna/canon/temp*.png
