@@ -1,0 +1,98 @@
+[
+  {
+    "event_id": "E01",
+    "event_date": "2025-10-09",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": "首次冠歌"
+  },
+  {
+    "event_id": "E02",
+    "event_date": "2026-01-01",
+    "planned_count": 3,
+    "decided_count": 3,
+    "status": "completed",
+    "note": "同日三首"
+  },
+  {
+    "event_id": "E03",
+    "event_date": "2026-01-02",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": null
+  },
+  {
+    "event_id": "E04",
+    "event_date": "2026-01-09",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": null
+  },
+  {
+    "event_id": "E05",
+    "event_date": "2026-01-14",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": null
+  },
+  {
+    "event_id": "E06",
+    "event_date": "2026-01-15",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": null
+  },
+  {
+    "event_id": "E07",
+    "event_date": "2026-01-17",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": null
+  },
+  {
+    "event_id": "E08",
+    "event_date": "2026-01-24",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": "冠歌卡 1/27 已收到"
+  },
+  {
+    "event_id": "E09",
+    "event_date": "2026-01-26",
+    "planned_count": 4,
+    "decided_count": 4,
+    "status": "completed",
+    "note": "1/26 共 4 首｜收卡：千年 1/29、有我呢 2/1、北緯23度26分 2/1、永不失聯的愛 2/3"
+  },
+  {
+    "event_id": "E10",
+    "event_date": "2026-01-27",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": "1/27 太陽與地球｜冠歌卡 2/3 已收到"
+  },
+  {
+    "event_id": "E11",
+    "event_date": "2026-01-28",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": "1/28 畫圈｜冠歌卡 2/3 已收到"
+  },
+  {
+    "event_id": "E12",
+    "event_date": "2026-01-29",
+    "planned_count": 1,
+    "decided_count": 1,
+    "status": "completed",
+    "note": "1/29 化身孤島的鯨｜冠歌卡 2/3 已收到"
+  }
+]
