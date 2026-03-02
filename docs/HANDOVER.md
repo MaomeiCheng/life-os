@@ -200,3 +200,6 @@ pnpm -s dev
 - [x] Dev boot notes added to HANDOVER (commit: a3f70a7)
 - [x] Repo clean + pushed (HEAD: f09afb7)
 
+
+## IP Assets (SSOT)
+- Index: apps/web/docs/ip/README.md
